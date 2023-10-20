@@ -51,7 +51,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 add_subdirectory(third_party/fmt)
-target_link_libraries(gi fmt glfw)
+find_package(OpenGL REQUIRED)
+target_link_libraries(gi fmt glfw OpenGL::GL GLEW)
 
 target_include_directories(gi PUBLIC "${CMAKE_SOURCE_DIR}/include")
 target_link_options(gi PRIVATE -fsanitize=address)

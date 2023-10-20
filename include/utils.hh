@@ -1,12 +1,15 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cerrno>
 #include <cstdint>
 #include <cstdlib>
+#include <filesystem>
 #include <fmt/core.h>
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
 using u8 = uint8_t;
 using u16 = uint16_t;
@@ -20,10 +23,14 @@ using usize = size_t;
 using f32 = float;
 using f64 = double;
 
+namespace fs = std::filesystem;
+
 #define eprint(...)                                                            \
   {                                                                            \
     std::fprintf(stderr, __VA_ARGS__);                                         \
     std::exit(1);                                                              \
   }
+
+auto read_file(const fs::path& path) -> std::string;
 
 #endif // !UTILS_H

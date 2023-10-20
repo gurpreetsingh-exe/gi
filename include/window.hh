@@ -10,7 +10,15 @@ public:
   ~Window();
 
 public:
-  auto is_running(std::function<void()>) -> void;
+  template <typename Callable>
+  auto is_running(Callable cb) -> void {
+    while (!glfwWindowShouldClose(m_Window)) {
+      cb();
+      glfwPollEvents();
+      glfwSwapBuffers(m_Window);
+    }
+  }
+
   auto get_handle() -> GLFWwindow* { return m_Window; }
   auto get_width() const -> u32 { return m_Width; }
   auto get_height() const -> u32 { return m_Height; }

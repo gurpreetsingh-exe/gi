@@ -41,14 +41,6 @@ Window::Window(u32 width, u32 height, const std::string& name)
   // glfwSwapInterval(0);
 }
 
-auto Window::is_running(std::function<void()> func) -> void {
-  while (!glfwWindowShouldClose(m_Window)) {
-    func();
-    glfwPollEvents();
-    glfwSwapBuffers(m_Window);
-  }
-}
-
 Window::~Window() {
   glfwDestroyWindow(m_Window);
   glfwTerminate();
