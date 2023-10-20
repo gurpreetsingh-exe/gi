@@ -26,7 +26,7 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
     eprint("%s\n", info_log.data());
   }
 
-  uint32_t frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  auto frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(frag_shader, 1, &frag, 0);
   glCompileShader(frag_shader);
 
@@ -46,8 +46,8 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
   glAttachShader(m_Id, frag_shader);
   glLinkProgram(m_Id);
 
-  auto is_linked = 0;
-  glGetProgramiv(m_Id, GL_LINK_STATUS, reinterpret_cast<i32*>(is_linked));
+  i32 is_linked;
+  glGetProgramiv(m_Id, GL_LINK_STATUS, &is_linked);
   if (is_linked == GL_FALSE) {
     int length;
     glGetProgramiv(m_Id, GL_INFO_LOG_LENGTH, &length);

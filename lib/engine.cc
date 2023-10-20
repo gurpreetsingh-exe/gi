@@ -9,6 +9,7 @@ Engine::Engine() : m_Window(std::make_unique<Window>(width, height, "gi")) {
                  reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   }
   m_Shader = std::make_unique<Shader>(vert, frag);
+  m_Mesh = Mesh::from_obj("model.obj");
 }
 
 auto Engine::run() -> void {

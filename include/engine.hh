@@ -1,3 +1,4 @@
+#include <mesh.hh>
 #include <shader.hh>
 #include <window.hh>
 
@@ -16,4 +17,5 @@ public:
 private:
   std::unique_ptr<Window> m_Window;
   std::unique_ptr<Shader> m_Shader;
+  std::unique_ptr<Mesh> m_Mesh;
 };
