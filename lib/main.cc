@@ -1,3 +1,6 @@
-#include <fmt/core.h>
+#include <engine.hh>
 
-auto main() -> int { fmt::println("Hello World"); }
+auto main() -> int {
+  auto engine = Engine();
+  engine.run();
+}
