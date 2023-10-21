@@ -64,3 +64,9 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
   glDetachShader(m_Id, vert_shader);
   glDetachShader(m_Id, frag_shader);
 }
+
+auto Shader::uploadUniformMat4(const std::string& name, const glm::mat4& mat)
+    -> void {
+  auto matLoc = glGetUniformLocation(m_Id, name.c_str());
+  glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(mat));
+}

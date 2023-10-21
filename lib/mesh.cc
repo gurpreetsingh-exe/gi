@@ -32,5 +32,7 @@ auto Mesh::from_obj(const fs::path& filepath) -> std::unique_ptr<Mesh> {
       mesh->indices.push_back(unique_vertices[vertex]);
     }
   }
+  fmt::println("\"{}\" loaded\n  vertices: {}\n  indices: {}",
+               filepath.string(), mesh->vertices.size(), mesh->indices.size());
   return mesh;
 }

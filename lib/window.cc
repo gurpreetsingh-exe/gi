@@ -1,23 +1,24 @@
 #include <window.hh>
 
-// static void keyCallback(GLFWwindow* window, int key, int scancode, int
-// action,
-//                         int mods) {
-//   auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
-//   if (action == GLFW_PRESS) {
-//     if (key == GLFW_KEY_ESCAPE) {
-//       event->disableCursor = !event->disableCursor;
-//     }
-//     event->pressed[key] = true;
-//   } else if (action == GLFW_RELEASE) {
-//     event->pressed[key] = false;
-//   }
-// }
-//
-// static void mouseCallback(GLFWwindow* window, double x, double y) {
-//   auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
-//   event->mousePos = glm::vec2(x, y);
-// }
+static void keyCallback(GLFWwindow* window, int key, int scancode, int action,
+                        int mods) {
+  (void)scancode;
+  (void)mods;
+  auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
+  if (action == GLFW_PRESS) {
+    if (key == GLFW_KEY_ESCAPE) {
+      event->disableCursor = !event->disableCursor;
+    }
+    event->pressed[key] = true;
+  } else if (action == GLFW_RELEASE) {
+    event->pressed[key] = false;
+  }
+}
+
+static void mouseCallback(GLFWwindow* window, double x, double y) {
+  auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
+  event->mousePos = glm::vec2(x, y);
+}
 
 Window::Window(u32 width, u32 height, const std::string& name)
     : m_Width(width), m_Height(height), m_Name(std::move(name)) {
@@ -34,14 +35,17 @@ Window::Window(u32 width, u32 height, const std::string& name)
     eprint("failed to create window\n");
   }
 
+  m_Event = new Event();
   glfwMakeContextCurrent(m_Window);
-  // glfwSetKeyCallback(m_Window, keyCallback);
-  // glfwSetCursorPosCallback(m_Window, mouseCallback);
+  glfwSetKeyCallback(m_Window, keyCallback);
+  glfwSetCursorPosCallback(m_Window, mouseCallback);
+  glfwSetWindowUserPointer(m_Window, m_Event);
   /// disable v-sync
   // glfwSwapInterval(0);
 }
 
 Window::~Window() {
+  delete m_Event;
   glfwDestroyWindow(m_Window);
   glfwTerminate();
 }

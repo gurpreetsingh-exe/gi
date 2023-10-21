@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <GLFW/glfw3.h>
+#include <event.hh>
 #include <utils.hh>
 
 class Window {
@@ -22,11 +23,13 @@ public:
   auto get_handle() -> GLFWwindow* { return m_Window; }
   auto get_width() const -> u32 { return m_Width; }
   auto get_height() const -> u32 { return m_Height; }
+  auto get_event() -> Event* { return m_Event; }
 
 private:
   u32 m_Width, m_Height;
   std::string m_Name;
   GLFWwindow* m_Window;
+  Event* m_Event;
 };
 
 #endif // !WINDOW_H
