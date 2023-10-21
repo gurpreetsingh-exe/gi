@@ -1,13 +1,13 @@
 #include <window.hh>
 
-static void keyCallback(GLFWwindow* window, int key, int scancode, int action,
-                        int mods) {
+static void key_callback(GLFWwindow* window, int key, int scancode, int action,
+                         int mods) {
   (void)scancode;
   (void)mods;
   auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
   if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_ESCAPE) {
-      event->disableCursor = !event->disableCursor;
+      event->disable_cursor = !event->disable_cursor;
     }
     event->pressed[key] = true;
   } else if (action == GLFW_RELEASE) {
@@ -15,37 +15,37 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action,
   }
 }
 
-static void mouseCallback(GLFWwindow* window, double x, double y) {
+static void mouse_callback(GLFWwindow* window, double x, double y) {
   auto event = reinterpret_cast<Event*>(glfwGetWindowUserPointer(window));
-  event->mousePos = glm::vec2(x, y);
+  event->mouse_pos = glm::vec2(x, y);
 }
 
 Window::Window(u32 width, u32 height, const std::string& name)
-    : m_Width(width), m_Height(height), m_Name(std::move(name)) {
+    : m_width(width), m_height(height), m_name(std::move(name)) {
   if (!glfwInit()) {
     eprint("cannot initialize glfw\n");
   }
 
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-  m_Window =
-      glfwCreateWindow(static_cast<i32>(m_Width), static_cast<i32>(m_Height),
-                       m_Name.c_str(), nullptr, nullptr);
-  if (!m_Window) {
+  m_window =
+      glfwCreateWindow(static_cast<i32>(m_width), static_cast<i32>(m_height),
+                       m_name.c_str(), nullptr, nullptr);
+  if (!m_window) {
     eprint("failed to create window\n");
   }
 
-  m_Event = new Event();
-  glfwMakeContextCurrent(m_Window);
-  glfwSetKeyCallback(m_Window, keyCallback);
-  glfwSetCursorPosCallback(m_Window, mouseCallback);
-  glfwSetWindowUserPointer(m_Window, m_Event);
+  m_event = new Event();
+  glfwMakeContextCurrent(m_window);
+  glfwSetKeyCallback(m_window, key_callback);
+  glfwSetCursorPosCallback(m_window, mouse_callback);
+  glfwSetWindowUserPointer(m_window, m_event);
   /// disable v-sync
   // glfwSwapInterval(0);
 }
 
 Window::~Window() {
-  delete m_Event;
-  glfwDestroyWindow(m_Window);
+  delete m_event;
+  glfwDestroyWindow(m_window);
   glfwTerminate();
 }

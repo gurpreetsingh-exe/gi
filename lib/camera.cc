@@ -6,76 +6,53 @@
 #define SPEED 0.005f
 #define ROT_SPEED 0.8f
 
-void Camera::updateModel() { m_Model = glm::mat4(1.0f); }
-
-void Camera::updateView() {
-  m_View = glm::lookAt(m_Position, m_Position + m_Direction,
-                       glm::vec3(0.0f, 0.0f, 1.0f));
-}
-
-void Camera::updateProjection() {
-  m_Projection =
-      glm::perspective(glm::radians(m_Fov), m_ViewportWidth / m_ViewportHeight,
-                       m_ClipNear, m_ClipFar);
-
-  m_Projection[1][1] *= -1;
-}
-
-auto Camera::resize(f32 width, f32 height) -> void {
-  if (m_ViewportWidth != width || m_ViewportHeight != height) {
-    m_ViewportWidth = width;
-    m_ViewportHeight = height;
-    m_NeedsUpdate = true;
-  }
-}
-
 auto Camera::update(GLFWwindow* handle, Event* event) -> void {
-  glm::vec2 delta = (event->mousePos - m_LastMousePos) * 0.0025f;
+  glm::vec2 delta = (event->mouse_pos - m_last_mouse_pos) * 0.0025f;
 
-  glm::vec3 upDir(0.0, 0.0, 1.0);
-  m_Right = glm::cross(upDir, m_Direction);
+  glm::vec3 up_dir(0.0, 0.0, 1.0);
+  m_right = glm::cross(up_dir, m_direction);
 
   if (event->pressed['W']) {
-    m_Position += m_Direction * event->deltaTime * SPEED;
-    m_NeedsUpdate = true;
+    m_position += m_direction * event->delta_time * SPEED;
+    m_needs_update = true;
   }
   if (event->pressed['S']) {
-    m_Position -= m_Direction * event->deltaTime * SPEED;
-    m_NeedsUpdate = true;
+    m_position -= m_direction * event->delta_time * SPEED;
+    m_needs_update = true;
   }
   if (event->pressed['A']) {
-    m_Position += m_Right * event->deltaTime * SPEED;
-    m_NeedsUpdate = true;
+    m_position += m_right * event->delta_time * SPEED;
+    m_needs_update = true;
   }
   if (event->pressed['D']) {
-    m_Position -= m_Right * event->deltaTime * SPEED;
-    m_NeedsUpdate = true;
+    m_position -= m_right * event->delta_time * SPEED;
+    m_needs_update = true;
   }
 
-  if (event->disableCursor) {
+  if (event->disable_cursor) {
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    m_LookAround = true;
+    m_look_around = true;
   } else {
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    m_LookAround = false;
+    m_look_around = false;
   }
 
-  if ((delta.x != 0.0 || delta.y != 0.0) && m_LookAround) {
+  if ((delta.x != 0.0 || delta.y != 0.0) && m_look_around) {
     float pitch = delta.y * ROT_SPEED;
     float yaw = delta.x * ROT_SPEED;
-    glm::quat q = glm::normalize(glm::cross(glm::angleAxis(pitch, m_Right),
-                                            glm::angleAxis(-yaw, upDir)));
-    m_Direction = glm::rotate(q, m_Direction);
-    m_NeedsUpdate = true;
+    glm::quat q = glm::normalize(glm::cross(glm::angleAxis(pitch, m_right),
+                                            glm::angleAxis(-yaw, up_dir)));
+    m_direction = glm::rotate(q, m_direction);
+    m_needs_update = true;
   }
 
-  m_LastMousePos = event->mousePos;
+  m_last_mouse_pos = event->mouse_pos;
 
-  if (m_NeedsUpdate) {
-    updateProjection();
-    updateView();
+  if (m_needs_update) {
+    update_projection();
+    update_view();
 
-    m_NeedsUpdate = false;
+    m_needs_update = false;
     return;
   }
 }

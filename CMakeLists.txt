@@ -6,8 +6,26 @@ set(OpenGL_GL_PREFERENCE GLVND)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 
+set(IMGUI_DIR third_party/imgui)
+
+set(imgui_sources
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+add_library(imgui ${imgui_sources})
+target_include_directories(imgui PRIVATE "${IMGUI_DIR}")
+target_include_directories(imgui PRIVATE "${IMGUI_DIR}/backends")
+
 file(GLOB_RECURSE sources "${CMAKE_SOURCE_DIR}/lib/*.cc")
+
 add_executable(gi ${sources})
+
 target_compile_options(gi PRIVATE
     -ggdb3
     -Wall -Werror -Wextra
@@ -52,7 +70,11 @@ endif()
 
 add_subdirectory(third_party/fmt)
 find_package(OpenGL REQUIRED)
-target_link_libraries(gi fmt glfw OpenGL::GL GLEW)
+
+target_link_libraries(gi imgui fmt glfw OpenGL::GL GLEW pthread ${CMAKE_DL_LIBS})
 
 target_include_directories(gi PUBLIC "${CMAKE_SOURCE_DIR}/include")
+target_include_directories(gi PUBLIC "${IMGUI_DIR}")
+target_include_directories(gi PUBLIC "${IMGUI_DIR}/backends")
+
 target_link_options(gi PRIVATE -fsanitize=address)

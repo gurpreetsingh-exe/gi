@@ -2,6 +2,8 @@
 #include <GL/glew.h>
 // clang-format on
 #include <camera.hh>
+#include <framebuffer.hh>
+#include <imgui_layer.hh>
 #include <mesh.hh>
 #include <shader.hh>
 #include <vertex_array.hh>
@@ -20,9 +22,11 @@ public:
   auto run() -> void;
 
 private:
-  std::unique_ptr<Window> m_Window;
-  std::unique_ptr<Shader> m_Shader;
-  std::unique_ptr<Mesh> m_Mesh;
-  std::unique_ptr<VertexArray> m_VertexArray;
-  std::unique_ptr<Camera> m_Camera;
+  std::unique_ptr<Window> m_window;
+  std::unique_ptr<Shader> m_shader;
+  std::unique_ptr<Mesh> m_mesh;
+  std::unique_ptr<VertexArray> m_vertex_array;
+  std::unique_ptr<Camera> m_camera;
+  std::unique_ptr<ImGuiLayer> m_imgui_layer;
+  std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
 };

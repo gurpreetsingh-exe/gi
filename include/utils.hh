@@ -1,7 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cassert>
 #include <cerrno>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -25,6 +27,7 @@ using f32 = float;
 using f64 = double;
 
 namespace fs = std::filesystem;
+namespace chr = std::chrono;
 
 #define eprint(...)                                                            \
   {                                                                            \

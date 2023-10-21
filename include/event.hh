@@ -6,10 +6,10 @@
 #include <utils.hh>
 
 struct Event {
-  f32 deltaTime;
+  f32 delta_time;
   bool pressed[GLFW_KEY_LAST + 1];
-  glm::vec2 mousePos;
-  bool disableCursor;
+  glm::vec2 mouse_pos;
+  bool disable_cursor;
 };
 
 #endif // !EVENT_H
