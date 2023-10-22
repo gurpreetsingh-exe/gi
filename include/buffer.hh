@@ -10,7 +10,10 @@
 template <u32 target>
 class Buffer {
 public:
-  Buffer() = default;
+  Buffer() {
+    glCreateBuffers(1, &m_Id);
+    glBindBuffer(target, m_Id);
+  }
 
   Buffer(void* data, isize size) {
     glCreateBuffers(1, &m_Id);
@@ -23,6 +26,11 @@ public:
 public:
   auto bind() -> void { glBindBuffer(target, m_Id); }
   auto unbind() -> void { glBindBuffer(target, 0); }
+
+  auto upload_data(void* data, isize size) -> void {
+    glBindBuffer(target, m_Id);
+    glBufferData(target, size, data, GL_STATIC_DRAW);
+  }
 
 private:
   u32 m_Id;

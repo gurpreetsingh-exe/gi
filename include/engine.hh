@@ -5,6 +5,7 @@
 #include <framebuffer.hh>
 #include <imgui_layer.hh>
 #include <mesh.hh>
+#include <renderer.hh>
 #include <shader.hh>
 #include <vertex_array.hh>
 #include <window.hh>
@@ -23,12 +24,10 @@ public:
 
 private:
   std::unique_ptr<Window> m_window;
-  std::unique_ptr<Shader> m_shader;
+  std::shared_ptr<Shader> m_shader;
   std::unique_ptr<Mesh> m_mesh;
-  std::unique_ptr<VertexArray> m_vertex_array;
   std::unique_ptr<Camera> m_camera;
   std::unique_ptr<ImGuiLayer> m_imgui_layer;
-  std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
-  std::unique_ptr<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>> m_msaa;
+  std::unique_ptr<Renderer> m_renderer;
   u32 m_cubemap;
 };

@@ -16,8 +16,12 @@ struct BufferLayout {
 };
 
 class VertexArray {
+  using VertexBuffer = Buffer<GL_ARRAY_BUFFER>;
+  using IndexBuffer = Buffer<GL_ELEMENT_ARRAY_BUFFER>;
+
 public:
   VertexArray();
+  VertexArray(VertexArray&& other);
   ~VertexArray() { glDeleteVertexArrays(1, &m_Id); }
 
 public:
@@ -25,11 +29,13 @@ public:
   auto unbind() -> void { glBindVertexArray(0); }
   auto add_vertex_buffers(std::vector<BufferLayout> layouts) -> void;
   auto set_index_buffer(std::vector<u32>& indices) -> void;
+  auto elems() -> i32 { return m_elems; }
 
 private:
   uint32_t m_Id;
-  std::vector<Buffer<GL_ARRAY_BUFFER>> m_Vertex_buffers;
-  std::unique_ptr<Buffer<GL_ELEMENT_ARRAY_BUFFER>> m_Index_buffer;
+  i32 m_elems;
+  std::vector<VertexBuffer> m_vertex_buffers;
+  std::unique_ptr<IndexBuffer> m_index_buffer;
 };
 
 #endif // !VERTEX_ARRAY_H

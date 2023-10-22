@@ -31,6 +31,7 @@ public:
       default:
         assert(false && "Not implemented");
     }
+    glBindTexture(target, 0);
   }
 
   Texture(u32 width, u32 height, u32 format, int pixel_type, void* data)
@@ -52,6 +53,7 @@ public:
       default:
         assert(false && "Not implemented");
     }
+    glBindTexture(target, 0);
   }
 
   Texture(const std::string& filepath) {
@@ -93,6 +95,8 @@ public:
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glGenerateMipmap(target);
+
+    glBindTexture(target, 0);
   }
 
   ~Texture() { glDeleteTextures(1, &m_Id); }

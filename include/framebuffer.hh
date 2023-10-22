@@ -13,6 +13,10 @@ public:
     glBindFramebuffer(GL_FRAMEBUFFER, m_Id);
     add_color_attachment();
     set_depth_attachment();
+    if (!is_complete()) {
+      eprint("framebuffer setup not completed");
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
   ~Framebuffer() {
@@ -22,9 +26,7 @@ public:
 
 public:
   void bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_Id); }
-
   void unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
-
   uint32_t get_id() { return m_Id; }
 
   void add_color_attachment() {
