@@ -16,7 +16,6 @@ public:
   }
 
   ~Framebuffer() {
-    fmt::println("~Framebuffer()");
     m_color_attachments.clear();
     glDeleteFramebuffers(1, &m_Id);
   }

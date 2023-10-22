@@ -29,4 +29,6 @@ private:
   std::unique_ptr<Camera> m_camera;
   std::unique_ptr<ImGuiLayer> m_imgui_layer;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
+  std::unique_ptr<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>> m_msaa;
+  u32 m_cubemap;
 };

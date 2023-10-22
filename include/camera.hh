@@ -28,7 +28,6 @@ public:
     if (m_viewport_width != width || m_viewport_height != height) {
       m_viewport_width = width;
       m_viewport_height = height;
-      fmt::println("{} {}", m_viewport_width, m_viewport_height);
       m_needs_update = true;
     }
   }

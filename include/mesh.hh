@@ -8,6 +8,9 @@
 #include <utils.hh>
 
 struct Vertex {
+  Vertex() = default;
+  Vertex(f32 x, f32 y, f32 z) : pos(glm::vec3(x, y, z)) {}
+
   glm::vec3 pos;
   auto operator==(const Vertex& other) const -> bool {
     return pos == other.pos;

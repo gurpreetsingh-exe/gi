@@ -16,7 +16,10 @@ public:
   auto bind() -> void { glUseProgram(m_Id); };
   auto unbind() -> void { glUseProgram(0); };
   auto get_id() const -> u32 { return m_Id; }
-  auto uploadUniformMat4(const std::string& name, const glm::mat4& mat) -> void;
+  auto upload_uniform_int(const std::string& name, i32 value) -> void;
+  auto upload_uniform_sampler(const std::string& name, i32 tex) -> void;
+  auto upload_uniform_mat4(const std::string& name, const glm::mat4& mat)
+      -> void;
 
 private:
   u32 m_Id;
