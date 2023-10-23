@@ -2,9 +2,9 @@
 #define CAMERA_H
 
 #include <GLFW/glfw3.h>
-#include <event.hh>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <utils.hh>
 
 static constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -24,7 +24,7 @@ public:
   auto get_model() const -> const glm::mat4& { return m_model; }
   auto get_view() const -> const glm::mat4& { return m_view; }
   auto get_projection() const -> const glm::mat4& { return m_projection; }
-  auto update(GLFWwindow* handle, Event* event) -> void;
+  auto update() -> void;
 
   auto resize(f32 width, f32 height) -> void {
     if (m_viewport_width != width || m_viewport_height != height) {

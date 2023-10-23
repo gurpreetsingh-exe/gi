@@ -24,6 +24,7 @@ public:
     }
   }
 
+  auto get_size() -> std::tuple<u32, u32>;
   auto get_handle() -> GLFWwindow* { return m_window; }
   auto get_width() const -> u32 { return m_width; }
   auto get_height() const -> u32 { return m_height; }

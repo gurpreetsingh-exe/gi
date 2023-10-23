@@ -1,4 +1,8 @@
 #include <engine.hh>
+#include <mesh.hh>
+#include <shader.hh>
+
+Window window = Window(600, 400, "gi");
 
 static void GLAPIENTRY message_callback(GLenum source, GLenum type, GLuint id,
                                         GLenum severity, GLsizei length,
@@ -14,31 +18,22 @@ static void GLAPIENTRY message_callback(GLenum source, GLenum type, GLuint id,
           message);
 }
 
-Engine::Engine() : m_window(std::make_unique<Window>(width, height, "gi")) {
+Engine::Engine() {
   if (glewInit() == GLEW_OK) {
     fmt::println("GL version: {}",
                  reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   }
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(message_callback, 0);
-
-  m_imgui_layer = std::make_unique<ImGuiLayer>(m_window->get_handle());
-
-  m_shader = std::make_shared<Shader>(vert, frag);
-  m_mesh = Mesh::from_obj("model1.obj");
-  m_renderer = std::make_unique<Renderer>(width, height);
+  m_renderer = std::make_unique<Renderer>();
 }
 
 auto Engine::run() -> void {
-  m_renderer->upload_mesh(*m_mesh, m_shader);
+  m_renderer->upload_mesh(std::move(*Mesh::from_obj("model1.obj")),
+                          Shader(vert, frag));
 
-  m_window->is_running([&] {
-    m_renderer->update(m_window);
-    m_imgui_layer->begin_frame();
-    m_imgui_layer->update(*m_renderer->framebuffer());
-    ImVec2 dim = m_imgui_layer->get_viewport_dimensions();
-    m_renderer->resize(u32(dim.x), u32(dim.y));
+  window.is_running([&] {
+    m_renderer->update();
     m_renderer->draw();
-    m_imgui_layer->end_frame();
   });
 }

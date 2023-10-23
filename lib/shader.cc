@@ -65,6 +65,11 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
   glDetachShader(m_Id, frag_shader);
 }
 
+Shader::Shader(Shader&& other) {
+  m_Id = other.m_Id;
+  other.m_Id = 0;
+}
+
 auto Shader::upload_uniform_int(const std::string& name, i32 value) -> void {
   auto loc = glGetUniformLocation(m_Id, name.c_str());
   glUniform1i(loc, value);

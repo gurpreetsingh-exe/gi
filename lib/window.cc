@@ -34,6 +34,7 @@ Window::Window(u32 width, u32 height, const std::string& name)
   if (!m_window) {
     eprint("failed to create window\n");
   }
+  get_size();
 
   m_event = new Event();
   glfwMakeContextCurrent(m_window);
@@ -42,6 +43,11 @@ Window::Window(u32 width, u32 height, const std::string& name)
   glfwSetWindowUserPointer(m_window, m_event);
   /// disable v-sync
   // glfwSwapInterval(0);
+}
+
+auto Window::get_size() -> std::tuple<u32, u32> {
+  glfwGetWindowSize(m_window, (i32*)&m_width, (i32*)&m_height);
+  return { m_width, m_height };
 }
 
 Window::~Window() {

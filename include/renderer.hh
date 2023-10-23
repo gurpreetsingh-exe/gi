@@ -6,31 +6,33 @@
 // clang-format on
 #include <camera.hh>
 #include <framebuffer.hh>
+#include <imgui_layer.hh>
 #include <mesh.hh>
 #include <shader.hh>
 #include <utils.hh>
 #include <vertex_array.hh>
 #include <window.hh>
 
-class Renderer {
-  using ShaderRef = std::shared_ptr<Shader>;
+extern Window window;
 
+class Renderer {
 public:
-  Renderer(u32 width, u32 height) : m_width(width), m_height(height) {
-    m_camera = std::make_unique<Camera>(width, height, 90.0, 0.01, 100.0);
-    m_msaa =
-        std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(width, height);
-    m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(width, height);
+  Renderer() {
+    auto [w, h] = window.get_size();
+    m_camera = std::make_unique<Camera>(w, h, 90.0, 0.01, 100.0);
+    m_msaa = std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(w, h);
+    m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
     m_cubemap = load_env_map("industrial_sunset_puresky_2k.hdr");
     m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(*Mesh::cube()));
     m_cubemap_shader = std::make_unique<Shader>("../shaders/cubemap_vert.glsl",
                                                 "../shaders/cubemap_frag.glsl");
+    m_imgui_layer = std::make_unique<ImGuiLayer>(window.get_handle());
   }
 
 public:
-  auto upload_mesh(Mesh& mesh, ShaderRef shader) -> void;
+  auto upload_mesh(Mesh&& mesh, Shader&& shader) -> void;
   auto resize(u32 width, u32 height) -> void;
-  auto update(std::unique_ptr<Window>& window) -> void;
+  auto update() -> void;
   auto draw() -> void;
   auto framebuffer() -> Framebuffer<GL_TEXTURE_2D>* {
     return m_framebuffer.get();
@@ -43,12 +45,13 @@ private:
 
 private:
   u32 m_width, m_height;
-  std::vector<std::tuple<VertexArray, ShaderRef>> m_bindings;
+  std::vector<std::tuple<VertexArray, Shader>> m_bindings;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>> m_msaa;
   std::unique_ptr<VertexArray> m_cubemap_vao;
   std::unique_ptr<Shader> m_cubemap_shader;
   std::unique_ptr<Camera> m_camera;
+  std::unique_ptr<ImGuiLayer> m_imgui_layer;
   u32 m_cubemap;
 };
 

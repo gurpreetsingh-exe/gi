@@ -6,11 +6,12 @@
 #define SPEED 0.005f
 #define ROT_SPEED 0.8f
 
-auto Camera::update(GLFWwindow* handle, Event* event) -> void {
+extern Window window;
+
+auto Camera::update() -> void {
+  auto event = window.get_event();
   glm::vec2 delta = (event->mouse_pos - m_last_mouse_pos) * 0.0025f;
-
   m_right = glm::cross(up, m_direction);
-
   if (event->pressed['W']) {
     m_position += m_direction * event->delta_time * SPEED;
     m_needs_update = true;
@@ -28,6 +29,7 @@ auto Camera::update(GLFWwindow* handle, Event* event) -> void {
     m_needs_update = true;
   }
 
+  auto handle = window.get_handle();
   if (event->disable_cursor) {
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     m_look_around = true;
@@ -39,8 +41,8 @@ auto Camera::update(GLFWwindow* handle, Event* event) -> void {
   if ((delta.x != 0.0 || delta.y != 0.0) && m_look_around) {
     float pitch = delta.y * ROT_SPEED;
     float yaw = delta.x * ROT_SPEED;
-    glm::quat q = glm::normalize(glm::cross(glm::angleAxis(pitch, m_right),
-                                            glm::angleAxis(-yaw, up)));
+    glm::quat q = glm::normalize(
+        glm::cross(glm::angleAxis(pitch, m_right), glm::angleAxis(-yaw, up)));
     m_direction = glm::rotate(q, m_direction);
     m_needs_update = true;
   }

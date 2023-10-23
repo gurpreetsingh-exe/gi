@@ -44,7 +44,7 @@ void ImGuiLayer::begin_frame() {
   m_open = true;
 }
 
-void ImGuiLayer::update(Framebuffer<GL_TEXTURE_2D>& framebuffer) {
+void ImGuiLayer::update(Framebuffer<GL_TEXTURE_2D>* framebuffer) {
   auto& io = ImGui::GetIO();
   ImGui::Begin("DockSpace", &m_open, m_window_flags);
 
@@ -78,8 +78,7 @@ void ImGuiLayer::update(Framebuffer<GL_TEXTURE_2D>& framebuffer) {
   ImGui::Begin("Viewport");
 
   m_dim = ImGui::GetContentRegionAvail();
-  // fmt::println("{} {}", m_dim.x, m_dim.y);
-  ImGui::Image((void*)(intptr_t)framebuffer.get_color_attachments()[0].get_id(),
+  ImGui::Image((void*)(intptr_t)framebuffer->get_color_attachments()[0].get_id(),
                m_dim, ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
 
   ImGui::End();

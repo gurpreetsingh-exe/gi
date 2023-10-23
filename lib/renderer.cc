@@ -2,9 +2,9 @@
 
 #define CUBEMAP_SIZE 1024
 
-auto Renderer::upload_mesh(Mesh& mesh, ShaderRef shader) -> void {
+auto Renderer::upload_mesh(Mesh&& mesh, Shader&& shader) -> void {
   auto vao = mesh_to_vao(mesh);
-  m_bindings.push_back({ std::move(vao), shader });
+  m_bindings.push_back({ std::move(vao), std::move(shader) });
 }
 
 auto Renderer::resize(u32 width, u32 height) -> void {
@@ -17,9 +17,12 @@ auto Renderer::resize(u32 width, u32 height) -> void {
   }
 }
 
-auto Renderer::update(std::unique_ptr<Window>& window) -> void {
-  auto event = window->get_event();
-  m_camera->update(window->get_handle(), event);
+auto Renderer::update() -> void {
+  m_camera->update();
+  m_imgui_layer->begin_frame();
+  m_imgui_layer->update(framebuffer());
+  ImVec2 dim = m_imgui_layer->get_viewport_dimensions();
+  resize(u32(dim.x), u32(dim.y));
 }
 
 auto Renderer::draw() -> void {
@@ -28,15 +31,14 @@ auto Renderer::draw() -> void {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (auto& [vao, shader] : m_bindings) {
-    shader->bind();
-    shader->upload_uniform_mat4("modelViewProjection",
-                                m_camera->get_projection() *
-                                    m_camera->get_view());
+    shader.bind();
+    shader.upload_uniform_mat4("projection", m_camera->get_projection());
+    shader.upload_uniform_mat4("view", m_camera->get_view());
     vao.bind();
     glDrawElements(GL_TRIANGLES, vao.elems(), GL_UNSIGNED_INT, nullptr);
     glViewport(0, 0, i32(m_width), i32(m_height));
     vao.unbind();
-    shader->unbind();
+    shader.unbind();
   }
 
   draw_cubemap();
@@ -48,16 +50,18 @@ auto Renderer::draw() -> void {
 
   glDisable(GL_DEPTH_TEST);
   m_msaa->unbind();
+
+  m_imgui_layer->end_frame();
 }
 
 auto Renderer::draw_cubemap() -> void {
   glDepthFunc(GL_LEQUAL);
   m_cubemap_shader->bind();
-  m_cubemap_shader->upload_uniform_mat4(
-      "modelViewProjection", m_camera->get_projection() * m_camera->get_view());
+  m_cubemap_shader->upload_uniform_mat4("projection",
+                                        m_camera->get_projection());
+  m_cubemap_shader->upload_uniform_mat4("view", m_camera->get_view());
   m_cubemap_vao->bind();
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
-  glActiveTexture(GL_TEXTURE0);
   m_cubemap_shader->upload_uniform_int("u_cubemap", 0);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
   m_cubemap_vao->unbind();
