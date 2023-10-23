@@ -10,11 +10,7 @@
 class Shader {
 public:
   Shader(const std::string& vert_src, const std::string& frag_src);
-  ~Shader() {
-    fmt::println("~Shader: {}", m_Id);
-    unbind();
-    glDeleteProgram(m_Id);
-  }
+  ~Shader() { glDeleteProgram(m_Id); }
 
 public:
   auto bind() -> void { glUseProgram(m_Id); };
