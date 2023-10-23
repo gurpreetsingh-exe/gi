@@ -9,8 +9,7 @@
 auto Camera::update(GLFWwindow* handle, Event* event) -> void {
   glm::vec2 delta = (event->mouse_pos - m_last_mouse_pos) * 0.0025f;
 
-  glm::vec3 up_dir(0.0, 0.0, 1.0);
-  m_right = glm::cross(up_dir, m_direction);
+  m_right = glm::cross(up, m_direction);
 
   if (event->pressed['W']) {
     m_position += m_direction * event->delta_time * SPEED;
@@ -41,7 +40,7 @@ auto Camera::update(GLFWwindow* handle, Event* event) -> void {
     float pitch = delta.y * ROT_SPEED;
     float yaw = delta.x * ROT_SPEED;
     glm::quat q = glm::normalize(glm::cross(glm::angleAxis(pitch, m_right),
-                                            glm::angleAxis(-yaw, up_dir)));
+                                            glm::angleAxis(-yaw, up)));
     m_direction = glm::rotate(q, m_direction);
     m_needs_update = true;
   }

@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+static constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
 class Camera {
 public:
   Camera(f32 width, f32 height, f32 fov, f32 clip_near, f32 clip_far)
@@ -43,8 +45,7 @@ private:
   auto update_model() -> void { m_model = glm::mat4(1.0f); }
 
   auto update_view() -> void {
-    m_view = glm::lookAt(m_position, m_position + m_direction,
-                         glm::vec3(0.0f, 0.0f, 1.0f));
+    m_view = glm::lookAt(m_position, m_position + m_direction, up);
   }
 
   auto update_projection() -> void {

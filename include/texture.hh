@@ -99,7 +99,11 @@ public:
     glBindTexture(target, 0);
   }
 
-  ~Texture() { glDeleteTextures(1, &m_Id); }
+  ~Texture() {
+    fmt::println("~Texture: {}", m_Id);
+    unbind();
+    glDeleteTextures(1, &m_Id);
+  }
 
 public:
   void bind() { glBindTexture(target, m_Id); }

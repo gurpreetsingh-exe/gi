@@ -36,3 +36,23 @@ auto Mesh::from_obj(const fs::path& filepath) -> std::unique_ptr<Mesh> {
                filepath.string(), mesh->vertices.size(), mesh->indices.size());
   return mesh;
 }
+
+auto Mesh::cube() -> std::unique_ptr<Mesh> {
+  auto mesh = std::make_unique<Mesh>();
+  mesh->vertices = std::move(std::vector<Vertex> {
+      { -1, -1, -1 },
+      { 1, -1, -1 },
+      { 1, 1, -1 },
+      { -1, 1, -1 },
+      { -1, -1, 1 },
+      { 1, -1, 1 },
+      { 1, 1, 1 },
+      { -1, 1, 1 },
+  });
+
+  mesh->indices = std::move(std::vector<u32> {
+      1, 2, 0, 2, 3, 0, 6, 2, 1, 1, 5, 6, 6, 5, 4, 4, 7, 6,
+      6, 3, 2, 7, 3, 6, 3, 7, 0, 7, 4, 0, 5, 1, 0, 4, 5, 0 });
+
+  return mesh;
+}

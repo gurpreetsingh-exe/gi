@@ -54,8 +54,8 @@ target_compile_options(gi PRIVATE
     -Werror=non-virtual-dtor
     -Werror=pessimizing-move
 
-    -fsanitize=address)
-    # )
+    # -fsanitize=address)
+    )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(gi PRIVATE
@@ -80,4 +80,4 @@ target_include_directories(gi PUBLIC "${CMAKE_SOURCE_DIR}/include")
 target_include_directories(gi PUBLIC "${IMGUI_DIR}")
 target_include_directories(gi PUBLIC "${IMGUI_DIR}/backends")
 
-target_link_options(gi PRIVATE -fsanitize=address)
+# target_link_options(gi PRIVATE -fsanitize=address)

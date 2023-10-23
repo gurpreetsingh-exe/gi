@@ -36,6 +36,7 @@ struct Mesh {
   std::vector<u32> indices;
 
   static auto from_obj(const fs::path& filepath) -> std::unique_ptr<Mesh>;
+  static auto cube() -> std::unique_ptr<Mesh>;
 };
 
 #endif // !MESH_H
