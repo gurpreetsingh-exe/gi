@@ -3,11 +3,10 @@
 #define MATH_PI 3.1415926535897932384626433832795
 #define MATH_INV_PI (1.0 / MATH_PI)
 
-in vec2 texCoord;
+in vec2 uv;
 out vec4 color;
 
 uniform int u_currentFace;
-// uniform sampler2D u_inputTexture;
 uniform sampler2D u_panorama;
 
 vec3 uvToXYZ(int face, vec2 uv) {
@@ -44,9 +43,7 @@ vec3 panoramaToCubeMap(int face, vec2 texCoord) {
     return  texture(u_panorama, src).rgb;
 }
 
-
-
 void main(void) {
     color = vec4(0.0, 0.0, 0.0, 1.0);
-    color.rgb = panoramaToCubeMap(u_currentFace, texCoord);
+    color.rgb = panoramaToCubeMap(u_currentFace, uv);
 }

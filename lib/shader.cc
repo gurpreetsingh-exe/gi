@@ -70,6 +70,10 @@ Shader::Shader(Shader&& other) {
   other.m_Id = 0;
 }
 
+auto Shader::quad(const std::string& frag_src) -> Shader {
+  return Shader("../shaders/fullscreen.glsl", frag_src);
+}
+
 auto Shader::upload_uniform_int(const std::string& name, i32 value) -> void {
   auto loc = glGetUniformLocation(m_Id, name.c_str());
   glUniform1i(loc, value);

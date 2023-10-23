@@ -14,6 +14,7 @@ public:
   ~Shader() { glDeleteProgram(m_Id); }
 
 public:
+  static auto quad(const std::string& frag_src) -> Shader;
   auto bind() -> void { glUseProgram(m_Id); };
   auto unbind() -> void { glUseProgram(0); };
   auto get_id() const -> u32 { return m_Id; }

@@ -13,6 +13,7 @@ auto Renderer::resize(u32 width, u32 height) -> void {
     m_height = height;
     m_msaa->resize(width, height);
     m_framebuffer->resize(width, height);
+    m_final_fb->resize(width, height);
     m_camera->resize(f32(width), f32(height));
   }
 }
@@ -51,6 +52,15 @@ auto Renderer::draw() -> void {
   glDisable(GL_DEPTH_TEST);
   m_msaa->unbind();
 
+  m_final_fb->bind();
+
+  m_post_process_shader->bind();
+  m_framebuffer->get_color_attachments()[0].bind();
+  m_post_process_shader->upload_uniform_int("u_buf", i32(0));
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  m_final_fb->unbind();
+
   m_imgui_layer->end_frame();
 }
 
@@ -87,8 +97,7 @@ auto Renderer::mesh_to_vao(Mesh& mesh) -> VertexArray {
 }
 
 auto Renderer::load_env_map(const fs::path& path) -> u32 {
-  auto shader = Shader("../shaders/fullscreen.glsl",
-                       "../shaders/panorama_to_cubemap.glsl");
+  auto shader = Shader::quad("../shaders/panorama_to_cubemap.glsl");
 
   auto hdri = Texture<GL_TEXTURE_2D>(path);
   fmt::println("\"{}\" loaded\n  width: {}\n  height: {}", path.string(),
