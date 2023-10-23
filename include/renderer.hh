@@ -21,7 +21,7 @@ public:
     m_msaa =
         std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(width, height);
     m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(width, height);
-    m_cubemap = load_env_map("reading_room_1k.hdr");
+    m_cubemap = load_env_map("industrial_sunset_puresky_2k.hdr");
     m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(*Mesh::cube()));
     m_cubemap_shader = std::make_unique<Shader>("../shaders/cubemap_vert.glsl",
                                                 "../shaders/cubemap_frag.glsl");

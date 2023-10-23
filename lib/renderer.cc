@@ -87,7 +87,8 @@ auto Renderer::load_env_map(const fs::path& path) -> u32 {
                        "../shaders/panorama_to_cubemap.glsl");
 
   auto hdri = Texture<GL_TEXTURE_2D>(path);
-  fmt::println("\"{}\" loaded", path.string());
+  fmt::println("\"{}\" loaded\n  width: {}\n  height: {}", path.string(),
+               hdri.get_width(), hdri.get_height());
   glEnableVertexAttribArray(0);
 
   u32 cubemap = 0;
