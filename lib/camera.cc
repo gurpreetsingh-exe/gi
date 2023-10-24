@@ -10,7 +10,7 @@ extern Window window;
 
 auto Camera::update() -> void {
   auto event = window.get_event();
-  glm::vec2 delta = (event->mouse_pos - m_last_mouse_pos) * 0.0025f;
+  auto delta = (event->mouse_pos - m_last_mouse_pos) * 0.0025f;
   m_right = glm::cross(up, m_direction);
   if (event->pressed['W']) {
     m_position += m_direction * event->delta_time * SPEED;
@@ -38,7 +38,7 @@ auto Camera::update() -> void {
     m_look_around = false;
   }
 
-  if ((delta.x != 0.0 || delta.y != 0.0) && m_look_around) {
+  if (delta != glm::vec2(0.0) && m_look_around) {
     float pitch = delta.y * ROT_SPEED;
     float yaw = delta.x * ROT_SPEED;
     glm::quat q = glm::normalize(
@@ -54,6 +54,5 @@ auto Camera::update() -> void {
     update_view();
 
     m_needs_update = false;
-    return;
   }
 }

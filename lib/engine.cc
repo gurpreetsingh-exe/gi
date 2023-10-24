@@ -13,8 +13,8 @@ static void GLAPIENTRY message_callback(GLenum source, GLenum type, GLuint id,
   (void)length;
   (void)userParam;
   fprintf(stderr,
-          "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity,
+          "%stype = 0x%x, severity = 0x%x, message = %s\n",
+          (type == GL_DEBUG_TYPE_ERROR ? "error: " : ""), type, severity,
           message);
 }
 

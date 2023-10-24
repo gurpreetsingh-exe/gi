@@ -65,21 +65,23 @@ void ImGuiLayer::update(Framebuffer<GL_TEXTURE_2D>* framebuffer) {
 
   ImGui::Begin("Debug");
   ImGui::Text("Delta Time: %.3f ms", 1000.0f / io.Framerate);
-  // ImGui::Text("Vertices: %zu", props.meshVertices);
+  ImGui::Text("Vertices: %zu", props.nvertices);
   ImGui::End();
 
-  // ImGui::Begin("Properties");
-  // ImGui::Text("Camera:");
-  // ImGui::SliderFloat("Fov", &props.cameraFov, 10.0, 120.0);
-  // props.reloadShaders = ImGui::Button("Reload Shaders");
-  // ImGui::End();
+  ImGui::Begin("Properties");
+  ImGui::Text("Camera:");
+  ImGui::SliderFloat("Fov", &props.camera_fov, 10.0, 120.0);
+  ImGui::DragFloat2("Clipping", &props.clip_near, 0.01f, 0.001f, 10000.0f);
+  // props.reload_shaders = ImGui::Button("Reload Shaders");
+  ImGui::End();
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
   ImGui::Begin("Viewport");
 
   m_dim = ImGui::GetContentRegionAvail();
-  ImGui::Image((void*)(intptr_t)framebuffer->get_color_attachments()[0].get_id(),
-               m_dim, ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
+  ImGui::Image(
+      (void*)(intptr_t)framebuffer->get_color_attachments()[0].get_id(), m_dim,
+      ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
 
   ImGui::End();
   ImGui::PopStyleVar();

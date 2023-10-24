@@ -4,6 +4,7 @@
 
 auto Renderer::upload_mesh(std::unique_ptr<Mesh>&& mesh, Shader&& shader)
     -> void {
+  m_imgui_layer->props.nvertices = mesh->vertices.size();
   auto vao = mesh_to_vao(std::move(mesh));
   m_bindings.push_back({ std::move(vao), std::move(shader) });
 }
@@ -20,6 +21,9 @@ auto Renderer::resize(u32 width, u32 height) -> void {
 }
 
 auto Renderer::update() -> void {
+  m_camera->set_fov(m_imgui_layer->props.camera_fov);
+  m_camera->set_clipping(m_imgui_layer->props.clip_near,
+                         m_imgui_layer->props.clip_far);
   m_camera->update();
   m_imgui_layer->begin_frame();
   m_imgui_layer->update(framebuffer());

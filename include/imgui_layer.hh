@@ -5,10 +5,21 @@
 #include <imgui.h>
 #include <window.hh>
 
+struct Properties {
+  f32 camera_fov = 90.0f;
+  f32 clip_near = 0.01f;
+  f32 clip_far = 100.0f;
+  usize nvertices = 0;
+  bool reload_shaders = false;
+};
+
 class ImGuiLayer {
 public:
   ImGuiLayer(GLFWwindow* window);
   ~ImGuiLayer();
+
+public:
+  Properties props = {};
 
 public:
   void update();

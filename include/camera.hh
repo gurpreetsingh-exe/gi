@@ -41,6 +41,18 @@ public:
     }
   }
 
+  auto set_clipping(float near, float far) {
+    if (m_clip_near != near) {
+      m_clip_near = near;
+      m_needs_update = true;
+    }
+
+    if (m_clip_far != far) {
+      m_clip_far = far;
+      m_needs_update = true;
+    }
+  }
+
 private:
   auto update_model() -> void { m_model = glm::mat4(1.0f); }
 

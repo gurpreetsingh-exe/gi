@@ -19,6 +19,8 @@ class Renderer {
 public:
   Renderer() {
     auto [w, h] = window.get_size();
+    m_width = w;
+    m_height = h;
     m_camera = std::make_unique<Camera>(w, h, 70.0, 0.01, 100.0);
     m_msaa = std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(w, h);
     m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
