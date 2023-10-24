@@ -19,12 +19,12 @@ class Renderer {
 public:
   Renderer() {
     auto [w, h] = window.get_size();
-    m_camera = std::make_unique<Camera>(w, h, 90.0, 0.01, 100.0);
+    m_camera = std::make_unique<Camera>(w, h, 70.0, 0.01, 100.0);
     m_msaa = std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(w, h);
     m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
     m_final_fb = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
     m_cubemap = load_env_map("industrial_sunset_puresky_2k.hdr");
-    m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(*Mesh::cube()));
+    m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
     m_cubemap_shader = std::make_unique<Shader>("../shaders/cubemap_vert.glsl",
                                                 "../shaders/cubemap_frag.glsl");
     m_imgui_layer = std::make_unique<ImGuiLayer>(window.get_handle());
@@ -33,7 +33,7 @@ public:
   }
 
 public:
-  auto upload_mesh(Mesh&& mesh, Shader&& shader) -> void;
+  auto upload_mesh(std::unique_ptr<Mesh>&& mesh, Shader&& shader) -> void;
   auto resize(u32 width, u32 height) -> void;
   auto update() -> void;
   auto draw() -> void;
@@ -42,7 +42,7 @@ public:
 private:
   auto draw_cubemap() -> void;
   auto load_env_map(const fs::path& path) -> u32;
-  auto mesh_to_vao(Mesh& mesh) -> VertexArray;
+  auto mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray;
 
 private:
   u32 m_width, m_height;

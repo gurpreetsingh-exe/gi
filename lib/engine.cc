@@ -29,7 +29,7 @@ Engine::Engine() {
 }
 
 auto Engine::run() -> void {
-  m_renderer->upload_mesh(std::move(*Mesh::from_obj("model1.obj")),
+  m_renderer->upload_mesh(std::move(Mesh::from_obj("model1.obj")),
                           Shader(vert, frag));
 
   window.is_running([&] {

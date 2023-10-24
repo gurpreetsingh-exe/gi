@@ -2,8 +2,9 @@
 
 #define CUBEMAP_SIZE 1024
 
-auto Renderer::upload_mesh(Mesh&& mesh, Shader&& shader) -> void {
-  auto vao = mesh_to_vao(mesh);
+auto Renderer::upload_mesh(std::unique_ptr<Mesh>&& mesh, Shader&& shader)
+    -> void {
+  auto vao = mesh_to_vao(std::move(mesh));
   m_bindings.push_back({ std::move(vao), std::move(shader) });
 }
 
@@ -33,6 +34,8 @@ auto Renderer::draw() -> void {
 
   for (auto& [vao, shader] : m_bindings) {
     shader.bind();
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
+    shader.upload_uniform_int("u_cubemap", 0);
     shader.upload_uniform_mat4("projection", m_camera->get_projection());
     shader.upload_uniform_mat4("view", m_camera->get_view());
     vao.bind();
@@ -78,7 +81,7 @@ auto Renderer::draw_cubemap() -> void {
   glDepthFunc(GL_LESS);
 }
 
-auto Renderer::mesh_to_vao(Mesh& mesh) -> VertexArray {
+auto Renderer::mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray {
   auto vao = VertexArray();
   vao.bind();
   vao.add_vertex_buffers({
@@ -87,11 +90,11 @@ auto Renderer::mesh_to_vao(Mesh& mesh) -> VertexArray {
           .normalized = false,
           .stride = 12,
           .size = 3,
-          .data = static_cast<void*>(mesh.vertices.data()),
-          .byteSize = static_cast<isize>(mesh.vertices.size() * 12),
+          .data = static_cast<void*>(mesh->vertices.data()),
+          .byteSize = static_cast<isize>(mesh->vertices.size() * 12),
       },
   });
-  vao.set_index_buffer(mesh.indices);
+  vao.set_index_buffer(mesh->indices);
   vao.unbind();
   return vao;
 }
