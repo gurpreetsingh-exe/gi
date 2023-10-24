@@ -2,7 +2,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-ImGuiLayer::ImGuiLayer(GLFWwindow* window) {
+ImGuiLayer::ImGuiLayer() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
@@ -10,7 +10,7 @@ ImGuiLayer::ImGuiLayer(GLFWwindow* window) {
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
   ImGui::StyleColorsDark();
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplGlfw_InitForOpenGL(window.get_handle(), true);
   ImGui_ImplOpenGL3_Init("#version 450");
 }
 

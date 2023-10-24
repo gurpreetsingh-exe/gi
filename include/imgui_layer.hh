@@ -15,7 +15,7 @@ struct Properties {
 
 class ImGuiLayer {
 public:
-  ImGuiLayer(GLFWwindow* window);
+  ImGuiLayer();
   ~ImGuiLayer();
 
 public:

@@ -2,6 +2,24 @@
 
 #define CUBEMAP_SIZE 1024
 
+Renderer::Renderer() {
+  auto [w, h] = window.get_size();
+  m_width = w;
+  m_height = h;
+  m_camera = std::make_unique<Camera>(w, h, 70.0, 0.01, 100.0);
+  m_msaa = std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(w, h);
+  m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
+  m_final_fb = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
+  m_cubemap = std::make_unique<CubeMap>(
+      CubeMap::cubemap("industrial_sunset_puresky_2k.hdr"));
+  m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
+  m_cubemap_shader = std::make_unique<Shader>("../shaders/cubemap_vert.glsl",
+                                              "../shaders/cubemap_frag.glsl");
+  m_imgui_layer = std::make_unique<ImGuiLayer>();
+  m_post_process_shader =
+      std::make_unique<Shader>(Shader::quad("../shaders/post.glsl"));
+}
+
 auto Renderer::upload_mesh(std::unique_ptr<Mesh>&& mesh, Shader&& shader)
     -> void {
   m_imgui_layer->props.nvertices = mesh->vertices.size();
@@ -38,7 +56,7 @@ auto Renderer::draw() -> void {
 
   for (auto& [vao, shader] : m_bindings) {
     shader.bind();
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
+    m_cubemap->bind();
     shader.upload_uniform_int("u_cubemap", 0);
     shader.upload_uniform_mat4("projection", m_camera->get_projection());
     shader.upload_uniform_mat4("view", m_camera->get_view());
@@ -78,7 +96,7 @@ auto Renderer::draw_cubemap() -> void {
                                         m_camera->get_projection());
   m_cubemap_shader->upload_uniform_mat4("view", m_camera->get_view());
   m_cubemap_vao->bind();
-  glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemap);
+  m_cubemap->bind();
   m_cubemap_shader->upload_uniform_int("u_cubemap", 0);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
   m_cubemap_vao->unbind();
@@ -101,68 +119,4 @@ auto Renderer::mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray {
   vao.set_index_buffer(mesh->indices);
   vao.unbind();
   return vao;
-}
-
-auto Renderer::load_env_map(const fs::path& path) -> u32 {
-  auto shader = Shader::quad("../shaders/panorama_to_cubemap.glsl");
-
-  auto hdri = Texture<GL_TEXTURE_2D>(path);
-  fmt::println("\"{}\" loaded\n  width: {}\n  height: {}", path.string(),
-               hdri.get_width(), hdri.get_height());
-  glEnableVertexAttribArray(0);
-
-  u32 cubemap = 0;
-  glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &cubemap);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  for (u32 i = 0; i < 6; ++i) {
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA32F,
-                 CUBEMAP_SIZE, CUBEMAP_SIZE, 0, GL_RGBA, GL_FLOAT, nullptr);
-  }
-
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-  u32 fbo;
-  glGenFramebuffers(1, &fbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                         GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubemap, 0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    fmt::println("framebuffer status not complete\n");
-  }
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-  shader.bind();
-  for (u32 i = 0; i < 6; ++i) {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    u32 side = i;
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, cubemap, 0);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, CUBEMAP_SIZE, CUBEMAP_SIZE);
-
-    hdri.bind();
-    shader.upload_uniform_sampler("u_panorama", 0);
-    shader.upload_uniform_int("u_currentFace", i32(i));
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glViewport(0, 0, i32(m_width), i32(m_height));
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  }
-
-  glDeleteFramebuffers(1, &fbo);
-
-  return cubemap;
 }
