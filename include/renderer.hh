@@ -8,6 +8,7 @@
 #include <framebuffer.hh>
 #include <imgui_layer.hh>
 #include <mesh.hh>
+#include <resource_manager.hh>
 #include <shader.hh>
 #include <utils.hh>
 #include <vertex_array.hh>
@@ -17,10 +18,11 @@ extern Window window;
 
 class Renderer {
 public:
-  Renderer();
+  Renderer(std::shared_ptr<ResourceManager>);
 
 public:
-  auto upload_mesh(std::unique_ptr<Mesh>&& mesh, Shader&& shader) -> void;
+  auto upload_mesh(std::unique_ptr<Mesh>&& mesh, Resource<Shader> shader)
+      -> void;
   auto resize(u32 width, u32 height) -> void;
   auto update() -> void;
   auto draw() -> void;
@@ -32,13 +34,14 @@ private:
 
 private:
   u32 m_width, m_height;
-  std::vector<std::tuple<VertexArray, Shader>> m_bindings;
+  std::shared_ptr<ResourceManager> m_resource_manager;
+  std::vector<std::tuple<VertexArray, Resource<Shader>>> m_bindings;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>> m_msaa;
   std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_final_fb;
   std::unique_ptr<VertexArray> m_cubemap_vao;
-  std::unique_ptr<Shader> m_cubemap_shader;
-  std::unique_ptr<Shader> m_post_process_shader;
+  Resource<Shader> m_cubemap_shader;
+  Resource<Shader> m_post_process_shader;
   std::unique_ptr<Camera> m_camera;
   std::unique_ptr<ImGuiLayer> m_imgui_layer;
   std::unique_ptr<CubeMap> m_cubemap;
