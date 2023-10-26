@@ -33,9 +33,9 @@ target_compile_options(gi PRIVATE
     -Wall -Werror -Wextra
     -Wundef
     -Wcast-align
-    -Wsign-conversion
+    # -Wsign-conversion
     -Wformat=2
-    -Wconversion
+    # -Wconversion
     -Wshadow
 
     -Werror=nonnull

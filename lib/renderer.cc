@@ -8,11 +8,15 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   m_height = h;
   m_resource_manager = rm;
   m_camera = std::make_unique<Camera>(w, h, 70.0, 0.01, 100.0);
-  m_msaa = std::make_unique<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>>(w, h);
-  m_framebuffer = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
-  m_final_fb = std::make_unique<Framebuffer<GL_TEXTURE_2D>>(w, h);
-  m_cubemap = std::make_unique<CubeMap>(
-      CubeMap::cubemap("industrial_sunset_puresky_2k.hdr"));
+  Framebuffer::Desc desc = { .width = i32(w),
+                             .height = i32(h),
+                             .multisampled = true };
+  m_msaa = std::make_unique<Framebuffer>(desc);
+  desc.multisampled = false;
+  m_framebuffer = std::make_unique<Framebuffer>(desc);
+  m_final_fb = std::make_unique<Framebuffer>(desc);
+  m_cubemap = m_resource_manager->load_texture(
+      Texture::Type::TextureCube, "industrial_sunset_puresky_2k.hdr");
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
   m_cubemap_shader = m_resource_manager->load_shader(
       "../shaders/cubemap_vert.glsl", "../shaders/cubemap_frag.glsl");
@@ -57,8 +61,9 @@ auto Renderer::draw() -> void {
 
   for (auto& [vao, s] : m_bindings) {
     auto& shader = m_resource_manager->get_shader(s);
+    auto& cubemap = m_resource_manager->get_texture(m_cubemap);
     shader.bind();
-    m_cubemap->bind();
+    cubemap.bind();
     shader.upload_uniform_int("u_cubemap", 0);
     shader.upload_uniform_mat4("projection", m_camera->get_projection());
     shader.upload_uniform_mat4("view", m_camera->get_view());
@@ -95,12 +100,12 @@ auto Renderer::draw() -> void {
 auto Renderer::draw_cubemap() -> void {
   glDepthFunc(GL_LEQUAL);
   auto& shader = m_resource_manager->get_shader(m_cubemap_shader);
+  auto& cubemap = m_resource_manager->get_texture(m_cubemap);
   shader.bind();
-  shader.upload_uniform_mat4("projection",
-                                        m_camera->get_projection());
+  shader.upload_uniform_mat4("projection", m_camera->get_projection());
   shader.upload_uniform_mat4("view", m_camera->get_view());
   m_cubemap_vao->bind();
-  m_cubemap->bind();
+  cubemap.bind();
   shader.upload_uniform_int("u_cubemap", 0);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
   m_cubemap_vao->unbind();

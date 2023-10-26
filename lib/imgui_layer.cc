@@ -44,7 +44,7 @@ void ImGuiLayer::begin_frame() {
   m_open = true;
 }
 
-void ImGuiLayer::update(Framebuffer<GL_TEXTURE_2D>* framebuffer) {
+void ImGuiLayer::update(Framebuffer* framebuffer) {
   auto& io = ImGui::GetIO();
   ImGui::Begin("DockSpace", &m_open, m_window_flags);
 

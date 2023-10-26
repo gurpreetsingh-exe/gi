@@ -26,7 +26,7 @@ public:
   auto resize(u32 width, u32 height) -> void;
   auto update() -> void;
   auto draw() -> void;
-  auto framebuffer() -> Framebuffer<GL_TEXTURE_2D>* { return m_final_fb.get(); }
+  auto framebuffer() -> Framebuffer* { return m_final_fb.get(); }
 
 private:
   auto draw_cubemap() -> void;
@@ -36,15 +36,15 @@ private:
   u32 m_width, m_height;
   std::shared_ptr<ResourceManager> m_resource_manager;
   std::vector<std::tuple<VertexArray, Resource<Shader>>> m_bindings;
-  std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_framebuffer;
-  std::unique_ptr<Framebuffer<GL_TEXTURE_2D_MULTISAMPLE>> m_msaa;
-  std::unique_ptr<Framebuffer<GL_TEXTURE_2D>> m_final_fb;
+  std::unique_ptr<Framebuffer> m_framebuffer;
+  std::unique_ptr<Framebuffer> m_msaa;
+  std::unique_ptr<Framebuffer> m_final_fb;
   std::unique_ptr<VertexArray> m_cubemap_vao;
   Resource<Shader> m_cubemap_shader;
   Resource<Shader> m_post_process_shader;
   std::unique_ptr<Camera> m_camera;
   std::unique_ptr<ImGuiLayer> m_imgui_layer;
-  std::unique_ptr<CubeMap> m_cubemap;
+  Resource<Texture> m_cubemap;
 };
 
 #endif // !RENDERER_H

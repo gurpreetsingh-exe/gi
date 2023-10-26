@@ -23,7 +23,7 @@ public:
 
 public:
   void update();
-  void update(Framebuffer<GL_TEXTURE_2D>* framebuffer);
+  void update(Framebuffer* framebuffer);
   void begin_frame();
   void end_frame();
   ImVec2 get_viewport_dimensions() { return m_dim; }
