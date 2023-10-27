@@ -35,29 +35,27 @@ public:
   ~ResourceManager() = default;
 
 public:
-  template <typename... Args>
-  auto load_shader(Args&&... args) -> Resource<Shader> {
-    auto index = u16(m_shaders.size());
-    m_shaders.push_back(Shader(std::forward<Args>(args)...));
+  template <Bindable T, typename... Args>
+  auto create(Args&&... args) -> Resource<T> {
+    auto& resource_vector = std::get<std::vector<T>>(m_resources);
+    auto index = u16(resource_vector.size());
+    resource_vector.push_back(T(std::forward<Args>(args)...));
     return index;
   }
 
   auto load_texture(Texture::Type type, const fs::path& path)
       -> Resource<Texture> {
-    auto index = u16(m_textures.size());
-    m_textures.push_back(Texture(type, m_ldr.load_image(path)));
-    return index;
-  }
-
-  template <typename... Args>
-  auto create_framebuffer(Args&&... args) -> Resource<Framebuffer> {
-    auto index = u16(m_framebuffers.size());
-    m_framebuffers.push_back(Framebuffer(std::forward<Args>(args)...));
+    auto& tex_resource_vector = std::get<std::vector<Texture>>(m_resources);
+    auto index = u16(tex_resource_vector.size());
+    tex_resource_vector.push_back(Texture(type, m_ldr.load_image(path)));
     return index;
   }
 
   template <Bindable T>
-  auto get(Resource<T> res) [[always_inline]] -> T&;
+  auto get(Resource<T> res) [[always_inline]] -> T& {
+    auto& resource_vector = std::get<std::vector<T>>(m_resources);
+    return resource_vector[res()];
+  }
 
   template <Bindable T>
   auto bind(Resource<T> res) [[always_inline]] -> void {
@@ -70,9 +68,13 @@ public:
   }
 
 private:
-  std::vector<Shader> m_shaders;
-  std::vector<Texture> m_textures;
-  std::vector<Framebuffer> m_framebuffers;
+  // clang-format off
+  std::tuple<
+    std::vector<Shader>,
+    std::vector<Texture>,
+    std::vector<Framebuffer>
+  > m_resources;
+  // clang-format on
   ResourceLoader m_ldr;
 };
 

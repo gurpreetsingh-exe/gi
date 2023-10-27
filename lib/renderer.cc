@@ -11,18 +11,18 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   Framebuffer::Desc desc = { .width = i32(w),
                              .height = i32(h),
                              .multisampled = true };
-  m_msaa = m_resource_manager->create_framebuffer(desc);
+  m_msaa = m_resource_manager->create<Framebuffer>(desc);
   desc.multisampled = false;
-  m_framebuffer = m_resource_manager->create_framebuffer(desc);
-  m_final_fb = m_resource_manager->create_framebuffer(desc);
+  m_framebuffer = m_resource_manager->create<Framebuffer>(desc);
+  m_final_fb = m_resource_manager->create<Framebuffer>(desc);
   m_cubemap = m_resource_manager->load_texture(
       Texture::Type::TextureCube, "industrial_sunset_puresky_2k.hdr");
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
-  m_cubemap_shader = m_resource_manager->load_shader(
+  m_cubemap_shader = m_resource_manager->create<Shader>(
       "../shaders/cubemap_vert.glsl", "../shaders/cubemap_frag.glsl");
   m_imgui_layer = std::make_unique<ImGuiLayer>();
   m_post_process_shader =
-      m_resource_manager->load_shader(Shader::quad("../shaders/post.glsl"));
+      m_resource_manager->create<Shader>(Shader::quad("../shaders/post.glsl"));
 }
 
 auto Renderer::upload_mesh(std::unique_ptr<Mesh>&& mesh,
