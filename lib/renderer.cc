@@ -11,10 +11,10 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   Framebuffer::Desc desc = { .width = i32(w),
                              .height = i32(h),
                              .multisampled = true };
-  m_msaa = std::make_unique<Framebuffer>(desc);
+  m_msaa = m_resource_manager->create_framebuffer(desc);
   desc.multisampled = false;
-  m_framebuffer = std::make_unique<Framebuffer>(desc);
-  m_final_fb = std::make_unique<Framebuffer>(desc);
+  m_framebuffer = m_resource_manager->create_framebuffer(desc);
+  m_final_fb = m_resource_manager->create_framebuffer(desc);
   m_cubemap = m_resource_manager->load_texture(
       Texture::Type::TextureCube, "industrial_sunset_puresky_2k.hdr");
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
@@ -36,9 +36,9 @@ auto Renderer::resize(u32 width, u32 height) -> void {
   if (m_width != width || m_height != height) {
     m_width = width;
     m_height = height;
-    m_msaa->resize(width, height);
-    m_framebuffer->resize(width, height);
-    m_final_fb->resize(width, height);
+    m_resource_manager->get(m_msaa).resize(width, height);
+    m_resource_manager->get(m_framebuffer).resize(width, height);
+    m_resource_manager->get(m_final_fb).resize(width, height);
     m_camera->resize(f32(width), f32(height));
   }
 }
@@ -55,15 +55,16 @@ auto Renderer::update() -> void {
 }
 
 auto Renderer::draw() -> void {
-  m_msaa->bind();
+  auto& msaa = m_resource_manager->get(m_msaa);
+  auto& framebuffer = m_resource_manager->get(m_framebuffer);
+  msaa.bind();
   glEnable(GL_DEPTH_TEST);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (auto& [vao, s] : m_bindings) {
-    auto& shader = m_resource_manager->get_shader(s);
-    auto& cubemap = m_resource_manager->get_texture(m_cubemap);
+    auto& shader = m_resource_manager->get<Shader>(s);
     shader.bind();
-    cubemap.bind();
+    m_resource_manager->bind(m_cubemap);
     shader.upload_uniform_int("u_cubemap", 0);
     shader.upload_uniform_mat4("projection", m_camera->get_projection());
     shader.upload_uniform_mat4("view", m_camera->get_view());
@@ -76,36 +77,33 @@ auto Renderer::draw() -> void {
 
   draw_cubemap();
 
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, m_msaa->get_id());
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebuffer->get_id());
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, msaa.get_id());
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.get_id());
   glBlitFramebuffer(0, 0, i32(m_width), i32(m_height), 0, 0, i32(m_width),
                     i32(m_height), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
   glDisable(GL_DEPTH_TEST);
-  m_msaa->unbind();
+  msaa.unbind();
 
-  m_final_fb->bind();
-
-  auto& shader = m_resource_manager->get_shader(m_post_process_shader);
+  m_resource_manager->bind(m_final_fb);
+  auto& shader = m_resource_manager->get<Shader>(m_post_process_shader);
   shader.bind();
-  m_framebuffer->get_color_attachments()[0].bind();
+  framebuffer.get_color_attachments()[0].bind();
   shader.upload_uniform_int("u_buf", i32(0));
   glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  m_final_fb->unbind();
+  m_resource_manager->unbind(m_final_fb);
 
   m_imgui_layer->end_frame();
 }
 
 auto Renderer::draw_cubemap() -> void {
   glDepthFunc(GL_LEQUAL);
-  auto& shader = m_resource_manager->get_shader(m_cubemap_shader);
-  auto& cubemap = m_resource_manager->get_texture(m_cubemap);
+  auto& shader = m_resource_manager->get<Shader>(m_cubemap_shader);
   shader.bind();
   shader.upload_uniform_mat4("projection", m_camera->get_projection());
   shader.upload_uniform_mat4("view", m_camera->get_view());
   m_cubemap_vao->bind();
-  cubemap.bind();
+  m_resource_manager->bind(m_cubemap);
   shader.upload_uniform_int("u_cubemap", 0);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
   m_cubemap_vao->unbind();

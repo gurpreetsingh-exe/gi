@@ -33,3 +33,19 @@ auto ResourceLoader::load_image(const fs::path& path) -> Texture::Desc {
     .pixels = data,
   };
 }
+
+template <>
+auto ResourceManager::get<Shader>(Resource<Shader> shader) -> Shader& {
+  return m_shaders[shader()];
+}
+
+template <>
+auto ResourceManager::get<Framebuffer>(Resource<Framebuffer> framebuffer)
+    -> Framebuffer& {
+  return m_framebuffers[framebuffer()];
+}
+
+template <>
+auto ResourceManager::get<Texture>(Resource<Texture> texture) -> Texture& {
+  return m_textures[texture()];
+}

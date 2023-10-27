@@ -44,7 +44,7 @@ void ImGuiLayer::begin_frame() {
   m_open = true;
 }
 
-void ImGuiLayer::update(Framebuffer* framebuffer) {
+void ImGuiLayer::update(Framebuffer& framebuffer) {
   auto& io = ImGui::GetIO();
   ImGui::Begin("DockSpace", &m_open, m_window_flags);
 
@@ -79,9 +79,8 @@ void ImGuiLayer::update(Framebuffer* framebuffer) {
   ImGui::Begin("Viewport");
 
   m_dim = ImGui::GetContentRegionAvail();
-  ImGui::Image(
-      (void*)(intptr_t)framebuffer->get_color_attachments()[0].get_id(), m_dim,
-      ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
+  ImGui::Image((void*)(intptr_t)framebuffer.get_color_attachments()[0].get_id(),
+               m_dim, ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
 
   ImGui::End();
   ImGui::PopStyleVar();

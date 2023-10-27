@@ -26,7 +26,9 @@ public:
   auto resize(u32 width, u32 height) -> void;
   auto update() -> void;
   auto draw() -> void;
-  auto framebuffer() -> Framebuffer* { return m_final_fb.get(); }
+  auto framebuffer() -> Framebuffer& {
+    return m_resource_manager->get(m_final_fb);
+  }
 
 private:
   auto draw_cubemap() -> void;
@@ -36,9 +38,9 @@ private:
   u32 m_width, m_height;
   std::shared_ptr<ResourceManager> m_resource_manager;
   std::vector<std::tuple<VertexArray, Resource<Shader>>> m_bindings;
-  std::unique_ptr<Framebuffer> m_framebuffer;
-  std::unique_ptr<Framebuffer> m_msaa;
-  std::unique_ptr<Framebuffer> m_final_fb;
+  Resource<Framebuffer> m_framebuffer;
+  Resource<Framebuffer> m_msaa;
+  Resource<Framebuffer> m_final_fb;
   std::unique_ptr<VertexArray> m_cubemap_vao;
   Resource<Shader> m_cubemap_shader;
   Resource<Shader> m_post_process_shader;

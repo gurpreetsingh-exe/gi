@@ -13,6 +13,7 @@ public:
   };
 
   Framebuffer(Desc desc);
+  Framebuffer(Framebuffer&&);
   ~Framebuffer();
 
 public:

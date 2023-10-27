@@ -14,6 +14,16 @@ Framebuffer::Framebuffer(Desc desc)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+Framebuffer::Framebuffer(Framebuffer&& other) {
+  m_Id = other.m_Id;
+  m_width = other.m_width;
+  m_height = other.m_height;
+  target = other.target;
+  m_color_attachments = std::move(other.m_color_attachments);
+  m_depth_attachment = other.m_depth_attachment;
+  other.m_Id = 0;
+}
+
 Framebuffer::~Framebuffer() {
   m_color_attachments.clear();
   glDeleteFramebuffers(1, &m_Id);
