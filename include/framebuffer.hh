@@ -29,7 +29,7 @@ public:
     return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
   }
 
-  [[nodiscard]] auto get_color_attachments() -> std::vector<Texture>& {
+  [[nodiscard]] auto get_color_attachments() const -> const std::vector<Texture>& {
     return m_color_attachments;
   }
 

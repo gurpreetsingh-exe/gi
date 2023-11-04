@@ -22,8 +22,11 @@ public:
   Properties props = {};
 
 public:
-  void update();
-  void update(Framebuffer& framebuffer);
+  template <typename Callable>
+  auto update(Callable cb) -> void {
+    m_dim = cb(props);
+  }
+
   void begin_frame();
   void end_frame();
   ImVec2 get_viewport_dimensions() { return m_dim; }

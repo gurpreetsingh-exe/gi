@@ -31,6 +31,7 @@ public:
       case Type::TextureMultiSampled2D:
         return GL_TEXTURE_2D_MULTISAMPLE;
       default:
+        __builtin_unreachable();
         assert(false);
     }
   }
@@ -63,7 +64,7 @@ public:
   ~Texture() { glDeleteTextures(1, &m_Id); }
 
 public:
-  auto bind() -> void { glBindTexture(target, m_Id); }
+  auto bind() const -> void { glBindTexture(target, m_Id); }
   auto unbind() -> void { glBindTexture(target, 0); }
   [[nodiscard]] auto get_id() const -> u32 { return m_Id; }
   [[nodiscard]] auto get_width() const -> u32 { return m_width; }

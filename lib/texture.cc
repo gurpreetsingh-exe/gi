@@ -9,6 +9,7 @@ auto Texture::Desc::opengl_format() -> i32 {
     case Format::RGBA32F:
       return GL_RGBA32F;
     default:
+      __builtin_unreachable();
       assert(false && "format not found");
   }
 }
@@ -22,6 +23,7 @@ auto Texture::Desc::opengl_byte_format() -> i32 {
     case ByteFormat::UByte:
       return GL_UNSIGNED_BYTE;
     default:
+      __builtin_unreachable();
       assert(false && "byte format not found");
   }
 }
@@ -34,6 +36,7 @@ static auto fmt_from_format(Texture::Format format) -> u32 {
     case Texture::Format::RGBA32F:
       return GL_RGBA;
     default:
+      __builtin_unreachable();
       assert(false && "format not found");
   }
 }
@@ -92,6 +95,7 @@ auto Texture::create_opengl_texture(Desc desc) -> void {
       unbind();
       auto shader = Shader::quad("../shaders/panorama_to_cubemap.glsl");
       auto hdri = Texture(Type::Texture2D, desc);
+      desc.pixels = nullptr;
       glEnableVertexAttribArray(0);
 
       u32 fbo;
@@ -133,4 +137,5 @@ auto Texture::create_opengl_texture(Desc desc) -> void {
     default:
       assert(false && "Not implemented");
   }
+  stbi_image_free(desc.pixels);
 }

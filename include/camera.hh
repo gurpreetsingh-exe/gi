@@ -1,6 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+// clang-format off
+#include <GL/glew.h>
+// clang-format on
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,6 +27,11 @@ public:
   auto get_model() const -> const glm::mat4& { return m_model; }
   auto get_view() const -> const glm::mat4& { return m_view; }
   auto get_projection() const -> const glm::mat4& { return m_projection; }
+  auto get_fov() const -> float { return m_fov; }
+  auto get_clipping() const -> std::tuple<float, float> {
+    return { m_clip_near, m_clip_far };
+  }
+
   auto update() -> void;
 
   auto resize(f32 width, f32 height) -> void {

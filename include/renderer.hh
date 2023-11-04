@@ -5,8 +5,8 @@
 #include <GL/glew.h>
 // clang-format on
 #include <camera.hh>
+#include <entity.hh>
 #include <framebuffer.hh>
-#include <imgui_layer.hh>
 #include <mesh.hh>
 #include <resource_manager.hh>
 #include <shader.hh>
@@ -24,14 +24,14 @@ public:
   auto upload_mesh(std::unique_ptr<Mesh>&& mesh, Resource<Shader> shader)
       -> void;
   auto resize(u32 width, u32 height) -> void;
-  auto update() -> void;
   auto draw() -> void;
   auto framebuffer() -> Framebuffer& {
     return m_resource_manager->get(m_final_fb);
   }
+  auto set_active_camera(Entity entity) { m_camera = entity; }
 
 private:
-  auto draw_cubemap() -> void;
+  auto draw_cubemap(Camera& camera) -> void;
   auto mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray;
 
 private:
@@ -44,9 +44,8 @@ private:
   std::unique_ptr<VertexArray> m_cubemap_vao;
   Resource<Shader> m_cubemap_shader;
   Resource<Shader> m_post_process_shader;
-  std::unique_ptr<Camera> m_camera;
-  std::unique_ptr<ImGuiLayer> m_imgui_layer;
   Resource<Texture> m_cubemap;
+  Entity m_camera;
 };
 
 #endif // !RENDERER_H

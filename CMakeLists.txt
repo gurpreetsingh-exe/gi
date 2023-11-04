@@ -76,6 +76,7 @@ find_package(OpenGL REQUIRED)
 
 target_link_libraries(gi stb imgui fmt glfw OpenGL::GL GLEW pthread ${CMAKE_DL_LIBS})
 
+target_include_directories(gi PUBLIC "${CMAKE_SOURCE_DIR}/third_party/entt")
 target_include_directories(gi PUBLIC "${CMAKE_SOURCE_DIR}/include")
 target_include_directories(gi PUBLIC "${IMGUI_DIR}")
 target_include_directories(gi PUBLIC "${IMGUI_DIR}/backends")

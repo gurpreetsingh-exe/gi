@@ -26,14 +26,19 @@ Engine::Engine() {
   glDebugMessageCallback(message_callback, 0);
   m_resource_manager = std::make_shared<ResourceManager>();
   m_renderer = std::make_unique<Renderer>(m_resource_manager);
+  m_scene = std::make_unique<Scene>();
+  m_editor = std::make_unique<Editor>();
 }
 
 auto Engine::run() -> void {
   auto shader = m_resource_manager->create<Shader>(vert, frag);
   m_renderer->upload_mesh(std::move(Mesh::from_obj("model1.obj")), shader);
+  m_renderer->set_active_camera(m_scene->add_camera());
 
   window.is_running([&] {
-    m_renderer->update();
+    m_editor->update(m_scene, m_renderer->framebuffer());
+    auto [x, y] = m_editor->get_viewport_size();
+    m_renderer->resize(x, y);
     m_renderer->draw();
   });
 }
