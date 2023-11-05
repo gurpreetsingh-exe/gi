@@ -12,6 +12,38 @@ ImGuiLayer::ImGuiLayer() {
   ImGui::StyleColorsDark();
   ImGui_ImplGlfw_InitForOpenGL(window.get_handle(), true);
   ImGui_ImplOpenGL3_Init("#version 450");
+  io.FontDefault = io.Fonts->AddFontFromFileTTF(
+      "../third_party/imgui/misc/fonts/DroidSans.ttf", 14.0f);
+  auto& colors = ImGui::GetStyle().Colors;
+  auto pink = ImVec4 { 1.0f, 0.0f, 1.0f, 1.0f };
+
+  auto bg = ImVec4 { 0.07f, 0.08f, 0.08f, 1.0f };
+  auto fg = ImVec4 { 0.2f, 0.22f, 0.23f, 1.0f };
+  auto hover = ImVec4 { 0.3f, 0.32f, 0.32f, 1.0f };
+  auto active = ImVec4 { 0.15f, 0.16f, 0.17f, 1.0f };
+
+  colors[ImGuiCol_WindowBg] = bg;
+  colors[ImGuiCol_Header] = fg;
+  colors[ImGuiCol_HeaderHovered] = hover;
+  colors[ImGuiCol_HeaderActive] = active;
+
+  colors[ImGuiCol_Button] = fg;
+  colors[ImGuiCol_ButtonHovered] = hover;
+  colors[ImGuiCol_ButtonActive] = active;
+
+  colors[ImGuiCol_FrameBg] = fg;
+  colors[ImGuiCol_FrameBgHovered] = hover;
+  colors[ImGuiCol_FrameBgActive] = active;
+
+  colors[ImGuiCol_Tab] = pink;
+  colors[ImGuiCol_TabHovered] = active;
+  colors[ImGuiCol_TabActive] = active;
+  colors[ImGuiCol_TabUnfocused] = pink;
+  colors[ImGuiCol_TabUnfocusedActive] = active;
+
+  colors[ImGuiCol_TitleBg] = bg;
+  colors[ImGuiCol_TitleBgActive] = bg;
+  colors[ImGuiCol_TitleBgCollapsed] = hover;
 }
 
 void ImGuiLayer::begin_frame() {

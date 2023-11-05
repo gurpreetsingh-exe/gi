@@ -21,7 +21,6 @@ auto Scene::resize(u32 width, u32 height) -> void {
   for (auto& camera : cameras) {
     auto& component = m_registry.get<CameraComponent>(camera);
     component.camera.resize(width, height);
-    break;
   }
 }
 

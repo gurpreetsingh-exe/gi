@@ -12,14 +12,17 @@ auto Editor::get_viewport_size() -> std::pair<u32, u32> {
 auto Editor::draw_entity(Entity entity) -> void {
   auto flags = ((m_selection == entity) ? ImGuiTreeNodeFlags_Selected : 0) |
                ImGuiTreeNodeFlags_OpenOnArrow |
+               ImGuiTreeNodeFlags_FramePadding |
                ImGuiTreeNodeFlags_SpanAvailWidth;
-  auto component = entity.get_component<IdentifierComponent>();
-  auto ptr = reinterpret_cast<void*>(&entity);
-  auto opened = ImGui::TreeNodeEx(ptr, flags, "%s", component.identifier);
+  auto& component = entity.get_component<IdentifierComponent>();
+  auto open = ImGui::TreeNodeEx(component.identifier, flags, "%s",
+                                component.identifier);
   if (ImGui::IsItemClicked()) {
     m_selection = entity;
   }
-  (void)opened;
+  if (open) {
+    ImGui::TreePop();
+  }
 }
 
 auto Editor::draw_component(Entity entity) -> void {
@@ -55,14 +58,11 @@ auto Editor::update(const std::unique_ptr<Scene>& scene, const Framebuffer& fb)
     ImGui::End();
 
     ImGui::Begin("Outliner");
-    auto entities = scene->m_registry.view<IdentifierComponent>();
-    for (usize i = 0; i < entities.size(); ++i) {
-      Entity entity = { entities[i], scene.get() };
-      // auto component = entity.get_component<IdentifierComponent>();
-      // auto selected = entity == m_selection;
-      // ImGui::Selectable(component.identifier, &selected);
-      draw_entity(entity);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 2.f));
+    for (auto& entity_id : scene->m_registry.view<IdentifierComponent>()) {
+      draw_entity({ entity_id, scene.get() });
     }
+    ImGui::PopStyleVar();
     ImGui::End();
 
     ImGui::Begin("Properties");
