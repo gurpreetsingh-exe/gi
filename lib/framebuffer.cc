@@ -6,6 +6,7 @@ Framebuffer::Framebuffer(Desc desc)
                                : Texture::Type::Texture2D) {
   glCreateFramebuffers(1, &m_Id);
   glBindFramebuffer(GL_FRAMEBUFFER, m_Id);
+  dbg("Framebuffer(id = %d)\n", m_Id);
   add_color_attachment();
   set_depth_attachment();
   if (!is_complete()) {

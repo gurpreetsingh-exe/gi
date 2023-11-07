@@ -16,6 +16,7 @@ public:
   auto resize(u32 width, u32 height) -> void;
   auto add_camera() -> Entity;
   auto create() -> Entity;
+  auto create(std::string&& name) -> Entity;
   auto update() -> void;
 
 private:

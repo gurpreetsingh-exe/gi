@@ -5,13 +5,19 @@
 
 auto Scene::create() -> Entity {
   auto entity = Entity(m_registry.create(), this);
-  std::string name = fmt::format("entity{}", next_id());
+  std::string name = fmt::format("object{}", next_id());
+  entity.add_component<IdentifierComponent>(name);
+  return entity;
+}
+
+auto Scene::create(std::string&& name) -> Entity {
+  auto entity = Entity(m_registry.create(), this);
   entity.add_component<IdentifierComponent>(name);
   return entity;
 }
 
 auto Scene::add_camera() -> Entity {
-  auto entity = create();
+  auto entity = create("Camera");
   entity.add_component<CameraComponent>();
   return entity;
 }

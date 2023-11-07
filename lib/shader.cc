@@ -63,6 +63,8 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
 
   glDetachShader(m_Id, vert_shader);
   glDetachShader(m_Id, frag_shader);
+
+  dbg("Shader(id = %d)\n", m_Id);
 }
 
 Shader::Shader(Shader&& other) {

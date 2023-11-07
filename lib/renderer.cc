@@ -15,7 +15,7 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   desc.multisampled = false;
   m_framebuffer = m_resource_manager->create<Framebuffer>(desc);
   m_final_fb = m_resource_manager->create<Framebuffer>(desc);
-  m_cubemap = m_resource_manager->load_texture(
+  m_cubemap = m_resource_manager->create<Texture>(
       Texture::Type::TextureCube, "industrial_sunset_puresky_2k.hdr");
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
   m_cubemap_shader = m_resource_manager->create<Shader>(

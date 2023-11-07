@@ -60,8 +60,12 @@ public:
 
   Texture() = default;
   Texture(Type type, Desc desc);
+  Texture(Type type, const fs::path& path);
   Texture(Texture&& other);
-  ~Texture() { glDeleteTextures(1, &m_Id); }
+  ~Texture() {
+    dbg("~Texture(%d)\n", m_Id);
+    glDeleteTextures(1, &m_Id);
+  }
 
 public:
   auto bind() const -> void { glBindTexture(target, m_Id); }

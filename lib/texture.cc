@@ -1,3 +1,4 @@
+#include <loader.hh>
 #include <texture.hh>
 
 auto Texture::Desc::opengl_format() -> i32 {
@@ -45,10 +46,14 @@ Texture::Texture(Type type, Desc desc)
     : m_width(desc.width), m_height(desc.height),
       target(type_to_opengl_target(type)) {
   glCreateTextures(target, 1, &m_Id);
+  dbg("Texture(id = %d, target = %d)\n", m_Id, target);
   glBindTexture(target, m_Id);
   create_opengl_texture(desc);
   glBindTexture(target, 0);
 }
+
+Texture::Texture(Type type, const fs::path& path)
+    : Texture(type, ResourceLoader::load_image(path)) {}
 
 Texture::Texture(Texture&& other) {
   m_Id = other.m_Id;
@@ -56,6 +61,7 @@ Texture::Texture(Texture&& other) {
   m_height = other.m_height;
   target = other.target;
   other.m_Id = 0;
+  dbg("moving Texture(id = %d, target = %d)\n", m_Id, target);
 }
 
 auto Texture::create_opengl_texture(Desc desc) -> void {
@@ -89,6 +95,7 @@ auto Texture::create_opengl_texture(Desc desc) -> void {
       glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
 
       if (not desc.pixels) {
+        fmt::println("pixels not found");
         return;
       }
 

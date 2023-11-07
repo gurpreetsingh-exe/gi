@@ -22,12 +22,6 @@ struct Resource {
   }
 };
 
-struct ResourceLoader {
-  ResourceLoader() = default;
-
-  auto load_image(const fs::path& path) -> Texture::Desc;
-};
-
 class ResourceManager {
 public:
   ResourceManager() = default;
@@ -40,14 +34,6 @@ public:
     auto& resource_vector = std::get<std::vector<T>>(m_resources);
     auto index = u16(resource_vector.size());
     resource_vector.push_back(T(std::forward<Args>(args)...));
-    return index;
-  }
-
-  auto load_texture(Texture::Type type, const fs::path& path)
-      -> Resource<Texture> {
-    auto& tex_resource_vector = std::get<std::vector<Texture>>(m_resources);
-    auto index = u16(tex_resource_vector.size());
-    tex_resource_vector.push_back(Texture(type, m_ldr.load_image(path)));
     return index;
   }
 
@@ -75,7 +61,6 @@ private:
     std::vector<Framebuffer>
   > m_resources;
   // clang-format on
-  ResourceLoader m_ldr;
 };
 
 #endif // !RESOURCE_MANAGER_H

@@ -25,22 +25,43 @@ auto Editor::draw_entity(Entity entity) -> void {
   }
 }
 
-auto Editor::draw_component(Entity entity) -> void {
-  if (not entity)
-    return;
-  ImGui::Text("Camera");
-  auto& component = entity.get_component<CameraComponent>();
-  auto& camera = component.camera;
-  auto fov = camera.get_fov();
-  if (ImGui::SliderFloat("Fov", &fov, 10.0, 120.0)) {
-    camera.set_fov(fov);
-  }
+auto Editor::draw_components(Entity entity) -> void {
+  auto& name = entity.get_component<IdentifierComponent>().identifier;
+  char buffer[64];
+  std::memset(buffer, 0, sizeof(buffer));
+  std::strncpy(buffer, name, sizeof(buffer));
 
-  auto [near, far] = camera.get_clipping();
-  f32 vec[] = { near, far };
-  if (ImGui::DragFloat2("Clipping", (f32*)&vec, 0.01f, 0.001f, 10000.0f)) {
-    camera.set_clipping(vec[0], vec[1]);
+  auto dim = ImGui::GetContentRegionAvail();
+  ImGui::PushItemWidth(dim.x * 0.8f);
+  if (ImGui::InputText("##", buffer, sizeof(buffer))) {
+    std::memcpy(name, buffer, sizeof(buffer));
   }
+  ImGui::PopItemWidth();
+
+  ImGui::PushItemWidth(dim.x * 0.2f);
+  ImGui::SameLine();
+  if (ImGui::Button("Add")) {
+    ImGui::OpenPopup("AddComponent");
+  }
+  ImGui::PopItemWidth();
+
+  draw_component<CameraComponent>("Camera", m_selection, [](auto& component) {
+    auto& camera = component.camera;
+    auto fov = camera.get_fov();
+    if (ImGui::SliderFloat("Fov", &fov, 10.0, 120.0)) {
+      camera.set_fov(fov);
+    }
+
+    auto [near, far] = camera.get_clipping();
+    f32 vec[] = { near, far };
+    if (ImGui::DragFloat2("Clipping", (f32*)&vec, 0.01f, 0.001f, 10000.0f)) {
+      camera.set_clipping(vec[0], vec[1]);
+    }
+
+    if (ImGui::IsItemActive()) {
+      ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+    }
+  });
 }
 
 auto Editor::update(const std::unique_ptr<Scene>& scene, const Framebuffer& fb)
@@ -63,18 +84,33 @@ auto Editor::update(const std::unique_ptr<Scene>& scene, const Framebuffer& fb)
       draw_entity({ entity_id, scene.get() });
     }
     ImGui::PopStyleVar();
+    if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered()) {
+      m_selection = {};
+    }
+
+    if (ImGui::BeginPopupContextWindow("Add Menu",
+                                       ImGuiPopupFlags_MouseButtonRight)) {
+      if (ImGui::MenuItem("Empty")) {
+        scene->create();
+      }
+
+      ImGui::EndPopup();
+    }
     ImGui::End();
 
     ImGui::Begin("Properties");
-    draw_component(m_selection);
+    if (m_selection) {
+      draw_components(m_selection);
+    }
     ImGui::End();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Viewport");
 
     auto dim = ImGui::GetContentRegionAvail();
-    ImGui::Image((void*)(intptr_t)fb.get_color_attachments()[0].get_id(), dim,
-                 ImVec2 { 0.0, 0.0 }, ImVec2 { 1.0, -1.0 });
+    auto& tex = fb.get_color_attachments()[0];
+    ImGui::Image((void*)(intptr_t)tex.get_id(), dim, ImVec2 { 0.0, 0.0 },
+                 ImVec2 { 1.0, -1.0 });
 
     ImGui::End();
     ImGui::PopStyleVar();

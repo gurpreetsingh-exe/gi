@@ -1,4 +1,4 @@
-#include <resource_manager.hh>
+#include <loader.hh>
 
 auto ResourceLoader::load_image(const fs::path& path) -> Texture::Desc {
   i32 w = 0;

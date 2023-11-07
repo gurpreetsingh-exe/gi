@@ -31,8 +31,8 @@ ImGuiLayer::ImGuiLayer() {
   colors[ImGuiCol_ButtonHovered] = hover;
   colors[ImGuiCol_ButtonActive] = active;
 
-  colors[ImGuiCol_FrameBg] = fg;
-  colors[ImGuiCol_FrameBgHovered] = hover;
+  colors[ImGuiCol_FrameBg] = active;
+  colors[ImGuiCol_FrameBgHovered] = fg;
   colors[ImGuiCol_FrameBgActive] = active;
 
   colors[ImGuiCol_Tab] = pink;
@@ -44,6 +44,9 @@ ImGuiLayer::ImGuiLayer() {
   colors[ImGuiCol_TitleBg] = bg;
   colors[ImGuiCol_TitleBgActive] = bg;
   colors[ImGuiCol_TitleBgCollapsed] = hover;
+
+  colors[ImGuiCol_SliderGrab] = hover;
+  colors[ImGuiCol_SliderGrabActive] = hover;
 }
 
 void ImGuiLayer::begin_frame() {

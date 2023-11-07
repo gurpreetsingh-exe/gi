@@ -11,7 +11,10 @@ class Shader {
 public:
   Shader(const std::string& vert_src, const std::string& frag_src);
   Shader(Shader&& other);
-  ~Shader() { glDeleteProgram(m_Id); }
+  ~Shader() {
+    dbg("~Shader(%d)\n", m_Id);
+    glDeleteProgram(m_Id);
+  }
 
 public:
   static auto quad(const std::string& frag_src) -> Shader;
