@@ -5,6 +5,7 @@
 #include <shader.hh>
 #include <texture.hh>
 #include <utils.hh>
+#include <vertex_array.hh>
 
 template <typename T>
 concept Bindable = requires(T t) {
@@ -38,18 +39,18 @@ public:
   }
 
   template <Bindable T>
-  auto get(Resource<T> res) [[always_inline]] -> T& {
+  [[gnu::always_inline]] auto get(Resource<T> res) -> T& {
     auto& resource_vector = std::get<std::vector<T>>(m_resources);
     return resource_vector[res()];
   }
 
   template <Bindable T>
-  auto bind(Resource<T> res) [[always_inline]] -> void {
+  [[gnu::always_inline]] auto bind(Resource<T> res) -> void {
     get(res).bind();
   }
 
   template <Bindable T>
-  auto unbind(Resource<T> res) [[always_inline]] -> void {
+  [[gnu::always_inline]] auto unbind(Resource<T> res) -> void {
     get(res).unbind();
   }
 
@@ -58,7 +59,8 @@ private:
   std::tuple<
     std::vector<Shader>,
     std::vector<Texture>,
-    std::vector<Framebuffer>
+    std::vector<Framebuffer>,
+    std::vector<VertexArray>
   > m_resources;
   // clang-format on
 };

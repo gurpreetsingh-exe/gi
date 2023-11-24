@@ -19,7 +19,7 @@ auto VertexArray::add_vertex_buffers(std::vector<BufferLayout> layouts)
   for (const auto& layout : layouts) {
     auto& buffer = m_vertex_buffers.emplace_back(layout.data, layout.byteSize);
     buffer.bind();
-    auto id = static_cast<u32>(m_vertex_buffers.size() - 1);
+    auto id = u32(m_vertex_buffers.size() - 1);
     glEnableVertexAttribArray(id);
     glVertexAttribPointer(id, layout.size, layout.type, layout.normalized,
                           layout.stride, nullptr);
@@ -28,7 +28,7 @@ auto VertexArray::add_vertex_buffers(std::vector<BufferLayout> layouts)
 
 void VertexArray::set_index_buffer(std::vector<u32>& indices) {
   m_index_buffer->upload_data(indices.data(),
-                              static_cast<isize>(indices.size() * sizeof(u32)));
+                              isize(indices.size() * sizeof(u32)));
   m_elems = i32(indices.size());
   m_index_buffer->bind();
 }

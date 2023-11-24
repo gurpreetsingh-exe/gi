@@ -19,13 +19,13 @@ auto Mesh::from_obj(const fs::path& filepath) -> std::unique_ptr<Mesh> {
     for (const auto& index : shape.mesh.indices) {
       auto vertex = Vertex();
       vertex.pos = {
-        attributes.vertices[static_cast<usize>(3 * index.vertex_index + 0)],
-        attributes.vertices[static_cast<usize>(3 * index.vertex_index + 1)],
-        attributes.vertices[static_cast<usize>(3 * index.vertex_index + 2)],
+        attributes.vertices[usize(3 * index.vertex_index + 0)],
+        attributes.vertices[usize(3 * index.vertex_index + 1)],
+        attributes.vertices[usize(3 * index.vertex_index + 2)],
       };
 
       if (unique_vertices.count(vertex) == 0) {
-        unique_vertices[vertex] = static_cast<u32>(mesh->vertices.size());
+        unique_vertices[vertex] = u32(mesh->vertices.size());
         mesh->vertices.push_back(vertex);
       }
 

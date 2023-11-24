@@ -28,9 +28,8 @@ Window::Window(u32 width, u32 height, const std::string& name)
 
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-  m_window =
-      glfwCreateWindow(static_cast<i32>(m_width), static_cast<i32>(m_height),
-                       m_name.c_str(), nullptr, nullptr);
+  m_window = glfwCreateWindow(i32(m_width), i32(m_height), m_name.c_str(),
+                              nullptr, nullptr);
   if (!m_window) {
     eprint("failed to create window\n");
   }

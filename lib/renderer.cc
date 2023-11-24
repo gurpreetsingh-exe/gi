@@ -108,7 +108,7 @@ auto Renderer::mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray {
           .stride = 12,
           .size = 3,
           .data = static_cast<void*>(mesh->vertices.data()),
-          .byteSize = static_cast<isize>(mesh->vertices.size() * 12),
+          .byteSize = isize(mesh->vertices.size() * 12),
       },
   });
   vao.set_index_buffer(mesh->indices);

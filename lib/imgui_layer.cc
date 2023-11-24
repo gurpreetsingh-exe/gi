@@ -5,7 +5,7 @@
 ImGuiLayer::ImGuiLayer() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO();
+  auto& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -14,7 +14,11 @@ ImGuiLayer::ImGuiLayer() {
   ImGui_ImplOpenGL3_Init("#version 450");
   io.FontDefault = io.Fonts->AddFontFromFileTTF(
       "../third_party/imgui/misc/fonts/DroidSans.ttf", 14.0f);
-  auto& colors = ImGui::GetStyle().Colors;
+
+  auto& style = ImGui::GetStyle();
+  style.WindowMenuButtonPosition = ImGuiDir_None;
+
+  auto& colors = style.Colors;
   auto pink = ImVec4 { 1.0f, 0.0f, 1.0f, 1.0f };
 
   auto bg = ImVec4 { 0.07f, 0.08f, 0.08f, 1.0f };

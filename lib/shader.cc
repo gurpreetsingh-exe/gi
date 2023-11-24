@@ -20,7 +20,7 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
   if (result == GL_FALSE) {
     i32 length;
     glGetShaderiv(vert_shader, GL_INFO_LOG_LENGTH, &length);
-    auto info_log = std::vector<char>(static_cast<usize>(length));
+    auto info_log = std::vector<char>(usize(length));
     glGetShaderInfoLog(vert_shader, length, &length, &info_log[0]);
     glDeleteShader(vert_shader);
     eprint("%s\n", info_log.data());
@@ -34,7 +34,7 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
   if (result == GL_FALSE) {
     i32 length;
     glGetShaderiv(frag_shader, GL_INFO_LOG_LENGTH, &length);
-    auto info_log = std::vector<char>(static_cast<usize>(length));
+    auto info_log = std::vector<char>(usize(length));
     glGetShaderInfoLog(frag_shader, length, &length, &info_log[0]);
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -52,7 +52,7 @@ Shader::Shader(const std::string& vert_path, const std::string& frag_path) {
     int length;
     glGetProgramiv(m_Id, GL_INFO_LOG_LENGTH, &length);
 
-    auto info_log = std::vector<char>(static_cast<usize>(length));
+    auto info_log = std::vector<char>(usize(length));
     glGetProgramInfoLog(m_Id, length, &length, &info_log[0]);
 
     glDeleteProgram(m_Id);

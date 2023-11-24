@@ -19,7 +19,7 @@ auto read_file(const fs::path& path) -> std::string {
 
   rewind(f);
 
-  auto size = static_cast<usize>(file_size);
+  auto size = usize(file_size);
   auto content = std::string();
   content.resize(size);
   auto read_bytes = std::fread(content.data(), 1, size, f);
