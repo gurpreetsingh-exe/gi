@@ -31,6 +31,7 @@ public:
   auto set_active_camera(Entity entity) { m_camera = entity; }
 
 private:
+  auto post_process() -> void;
   auto draw_cubemap(Camera& camera) -> void;
   auto mesh_to_vao(std::unique_ptr<Mesh>&& mesh) -> VertexArray;
 

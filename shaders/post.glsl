@@ -3,8 +3,9 @@
 in vec2 uv;
 uniform sampler2D u_buf;
 uniform sampler2D u_depth;
+uniform bool u_motion_blur;
 
-uniform mat4 view_projection;
+uniform mat4 inv_view_projection;
 uniform mat4 prev_view_projection;
 
 out vec4 color;
@@ -52,17 +53,18 @@ vec3 tonemap(vec3 color) {
 }
 
 void main() {
-    float depth = texture(u_depth, uv).x;
-    vec3 current = vec3(uv, depth) * 2.f - 1.f;
-    vec4 prev = prev_view_projection * (view_projection * vec4(current, 1.0f));
-    vec2 blur_vec = (current.xy - prev.xy) * 0.6f;
-
     color = texture(u_buf, uv);
-    int samples = 24;
-    for (int i = 1; i < samples; ++i) {
-        vec2 offset = blur_vec * (float(i) / float(samples - 1) - 0.5f);
-        color += texture(u_buf, uv + offset);
+    if (u_motion_blur) {
+        float depth = texture(u_depth, uv).x;
+        vec3 current = vec3(uv, depth) * 2.f - 1.f;
+        vec4 prev = prev_view_projection * (inv_view_projection * vec4(current, 1.0f));
+        vec2 blur_vec = (current.xy - prev.xy) * 0.6f;
+        int samples = 24;
+        for (int i = 1; i < samples; ++i) {
+            vec2 offset = blur_vec * (float(i) / float(samples - 1) - 0.5f);
+            color += texture(u_buf, uv + offset);
+        }
+        color /= float(samples);
     }
-    color /= float(samples);
     color.rgb = tonemap(color.rgb);
 }

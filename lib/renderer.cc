@@ -3,6 +3,8 @@
 
 #define CUBEMAP_SIZE 1024
 
+bool g_motion_blur = true;
+
 Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   auto [w, h] = window.get_size();
   m_width = w;
@@ -49,7 +51,6 @@ auto Renderer::draw() -> void {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   auto& camera = m_camera.get_component<CameraComponent>().camera;
-
   for (auto& [vao, s] : m_bindings) {
     auto& shader = m_resource_manager->get<Shader>(s);
     shader.bind();
@@ -65,13 +66,19 @@ auto Renderer::draw() -> void {
 
   draw_cubemap(camera);
   glDisable(GL_DEPTH_TEST);
+  post_process();
+}
 
+auto Renderer::post_process() -> void {
+  auto& camera = m_camera.get_component<CameraComponent>().camera;
+  auto& framebuffer = m_resource_manager->get(m_framebuffer);
   m_resource_manager->bind(m_final_fb);
   auto& shader = m_resource_manager->get<Shader>(m_post_process_shader);
   shader.bind();
   auto vproj = glm::mat4(glm::mat3(camera.get_view_projection()));
-  shader.upload_uniform_mat4("view_projection", glm::inverse(vproj));
+  shader.upload_uniform_mat4("inv_view_projection", glm::inverse(vproj));
   shader.upload_uniform_mat4("prev_view_projection", m_prev_view_projection);
+  shader.upload_uniform_int("u_motion_blur", g_motion_blur);
   glActiveTexture(GL_TEXTURE0);
   framebuffer.get_color_attachments()[0].bind();
   shader.upload_uniform_int("u_buf", 0);

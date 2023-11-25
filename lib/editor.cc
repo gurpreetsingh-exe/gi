@@ -2,6 +2,8 @@
 #include <components/identifier.hh>
 #include <editor.hh>
 
+extern bool g_motion_blur;
+
 Editor::Editor() : m_imgui_layer(std::make_unique<ImGuiLayer>()) {}
 
 auto Editor::get_viewport_size() -> std::pair<u32, u32> {
@@ -70,12 +72,15 @@ auto Editor::update(const std::unique_ptr<Scene>& scene, const Framebuffer& fb)
   scene->resize(w, h);
   scene->update();
   m_imgui_layer->begin_frame();
-  m_imgui_layer->update([&](auto& props) {
+  m_imgui_layer->update([&] {
     ImGui::Begin("Debug");
     ImGuiIO& io = ImGui::GetIO();
     ImGui::Text("Delta Time: %.3f ms", 1000.0f / io.Framerate);
-    ImGui::Text("Vertices: %zu", props.nvertices);
-    props.reload_shaders = ImGui::Button("Reload Shaders");
+    static auto vsync = false;
+    if (ImGui::Checkbox("V-Sync", &vsync)) {
+      glfwSwapInterval(vsync);
+    }
+    ImGui::Checkbox("Motion Blur", &g_motion_blur);
     ImGui::End();
 
     ImGui::Begin("Outliner");
