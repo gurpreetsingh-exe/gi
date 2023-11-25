@@ -10,6 +10,7 @@ public:
   struct Desc {
     i32 width, height;
     bool multisampled;
+    u32 color_attachments = 1;
   };
 
   Framebuffer(Desc desc);
@@ -35,6 +36,7 @@ public:
 
 private:
   u32 m_width, m_height;
+  u32 m_ncolor_attachments;
   Texture::Type target;
   u32 m_Id;
   std::vector<Texture> m_color_attachments;

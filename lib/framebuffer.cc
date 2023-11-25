@@ -1,13 +1,22 @@
 #include <framebuffer.hh>
 
+static u32 g_attachments[4] = {
+  GL_COLOR_ATTACHMENT0,
+  GL_COLOR_ATTACHMENT1,
+  GL_COLOR_ATTACHMENT2,
+  GL_COLOR_ATTACHMENT3,
+};
+
 Framebuffer::Framebuffer(Desc desc)
     : m_width(desc.width), m_height(desc.height),
+      m_ncolor_attachments(desc.color_attachments),
       target(desc.multisampled ? Texture::Type::TextureMultiSampled2D
                                : Texture::Type::Texture2D) {
   glCreateFramebuffers(1, &m_Id);
   glBindFramebuffer(GL_FRAMEBUFFER, m_Id);
   dbg("Framebuffer(id = %d)\n", m_Id);
-  add_color_attachment();
+  for (u32 i = 0; i < m_ncolor_attachments; ++i) { add_color_attachment(); }
+  glDrawBuffers(m_ncolor_attachments, g_attachments);
   set_depth_attachment();
   if (!is_complete()) {
     eprint("framebuffer setup not completed");
@@ -19,6 +28,7 @@ Framebuffer::Framebuffer(Framebuffer&& other) {
   m_Id = other.m_Id;
   m_width = other.m_width;
   m_height = other.m_height;
+  m_ncolor_attachments = other.m_ncolor_attachments;
   target = other.target;
   m_color_attachments = std::move(other.m_color_attachments);
   m_depth_attachment = other.m_depth_attachment;
@@ -37,6 +47,7 @@ auto Framebuffer::add_color_attachment() -> void {
                          .byte_format = Texture::ByteFormat::UByte,
                          .pixels = nullptr };
   auto& texture = m_color_attachments.emplace_back(target, desc);
+  texture.bind();
   auto type = Texture::type_to_opengl_target(target);
   glFramebufferTexture2D(
       GL_FRAMEBUFFER,
@@ -79,7 +90,8 @@ auto Framebuffer::invalidate() -> void {
   bind();
   m_color_attachments.clear();
   glDeleteTextures(1, &m_Id);
-  add_color_attachment();
+  for (u32 i = 0; i < m_ncolor_attachments; ++i) { add_color_attachment(); }
+  glDrawBuffers(m_ncolor_attachments, g_attachments);
   set_depth_attachment();
   unbind();
 }

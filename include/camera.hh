@@ -27,6 +27,9 @@ public:
   auto get_model() const -> const glm::mat4& { return m_model; }
   auto get_view() const -> const glm::mat4& { return m_view; }
   auto get_projection() const -> const glm::mat4& { return m_projection; }
+  auto get_view_projection() const -> const glm::mat4& {
+    return m_view_projection;
+  }
   auto get_fov() const -> float { return m_fov; }
   auto get_clipping() const -> std::tuple<float, float> {
     return { m_clip_near, m_clip_far };
@@ -74,11 +77,18 @@ private:
                                     m_clip_near, m_clip_far);
   }
 
+  auto update_matrix() -> void {
+    update_view();
+    update_projection();
+    m_view_projection = m_projection * m_view;
+  }
+
 private:
   f32 m_viewport_width, m_viewport_height;
   glm::mat4 m_model;
   glm::mat4 m_view;
   glm::mat4 m_projection;
+  glm::mat4 m_view_projection;
 
   f32 m_fov;
   f32 m_clip_near;

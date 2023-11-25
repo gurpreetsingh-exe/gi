@@ -50,9 +50,7 @@ auto Camera::update() -> void {
   m_last_mouse_pos = event->mouse_pos;
 
   if (m_needs_update) {
-    update_projection();
-    update_view();
-
+    update_matrix();
     m_needs_update = false;
   }
 }

@@ -39,13 +39,14 @@ private:
   std::shared_ptr<ResourceManager> m_resource_manager;
   std::vector<std::tuple<VertexArray, Resource<Shader>>> m_bindings;
   Resource<Framebuffer> m_framebuffer;
-  Resource<Framebuffer> m_msaa;
   Resource<Framebuffer> m_final_fb;
   std::unique_ptr<VertexArray> m_cubemap_vao;
   Resource<Shader> m_cubemap_shader;
   Resource<Shader> m_post_process_shader;
   Resource<Texture> m_cubemap;
   Entity m_camera;
+
+  glm::mat4 m_prev_view_projection;
 };
 
 #endif // !RENDERER_H
