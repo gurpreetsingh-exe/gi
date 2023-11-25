@@ -55,8 +55,6 @@ void main() {
     float depth = texture(u_depth, uv).x;
     vec3 current = vec3(uv, depth) * 2.f - 1.f;
     vec4 prev = prev_view_projection * (view_projection * vec4(current, 1.0f));
-    // prev.xyz /= prev.w;
-    // prev.xy = prev.xy * 0.5 + 0.5;
     vec2 blur_vec = (current.xy - prev.xy) * 0.6f;
 
     color = texture(u_buf, uv);

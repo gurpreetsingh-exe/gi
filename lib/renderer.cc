@@ -69,7 +69,8 @@ auto Renderer::draw() -> void {
   m_resource_manager->bind(m_final_fb);
   auto& shader = m_resource_manager->get<Shader>(m_post_process_shader);
   shader.bind();
-  shader.upload_uniform_mat4("view_projection", glm::inverse(camera.get_view_projection()));
+  auto vproj = glm::mat4(glm::mat3(camera.get_view_projection()));
+  shader.upload_uniform_mat4("view_projection", glm::inverse(vproj));
   shader.upload_uniform_mat4("prev_view_projection", m_prev_view_projection);
   glActiveTexture(GL_TEXTURE0);
   framebuffer.get_color_attachments()[0].bind();
@@ -79,8 +80,7 @@ auto Renderer::draw() -> void {
   shader.upload_uniform_int("u_depth", 1);
   glDrawArrays(GL_TRIANGLES, 0, 3);
   m_resource_manager->unbind(m_final_fb);
-
-  m_prev_view_projection = camera.get_view_projection();
+  m_prev_view_projection = vproj;
 }
 
 auto Renderer::draw_cubemap(Camera& camera) -> void {
