@@ -40,8 +40,7 @@ Window::Window(u32 width, u32 height, const std::string& name)
   glfwSetKeyCallback(m_window, key_callback);
   glfwSetCursorPosCallback(m_window, mouse_callback);
   glfwSetWindowUserPointer(m_window, m_event);
-  /// disable v-sync
-  // glfwSwapInterval(0);
+  glfwSwapInterval(0);
 }
 
 auto Window::get_size() -> std::tuple<u32, u32> {
