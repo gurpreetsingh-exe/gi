@@ -38,8 +38,10 @@ public:
 
   enum Format : u8 {
     RGB8,
+    RGB16F,
     RGB32F,
     RGBA32F,
+    Depth,
   };
 
   enum ByteFormat : u8 {

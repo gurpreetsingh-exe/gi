@@ -10,14 +10,15 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   m_width = w;
   m_height = h;
   m_resource_manager = rm;
-  Framebuffer::Desc desc = { .width = i32(w),
-                             .height = i32(h),
-                             .multisampled = true };
-  desc.multisampled = false;
-  desc.color_attachments = 2;
-  m_framebuffer = m_resource_manager->create<Framebuffer>(desc);
-  desc.color_attachments = 1;
-  m_final_fb = m_resource_manager->create<Framebuffer>(desc);
+  m_framebuffer = m_resource_manager->create<Framebuffer>(
+      Framebuffer::Desc(i32(w), i32(h),
+                        { { Texture::Format::RGB8, Texture::ByteFormat::UByte },
+                          { Texture::Format::Depth } }));
+
+  m_final_fb = m_resource_manager->create<Framebuffer>(Framebuffer::Desc(
+      i32(w), i32(h),
+      { { Texture::Format::RGB8, Texture::ByteFormat::UByte } }));
+
   m_cubemap = m_resource_manager->create<Texture>(
       Texture::Type::TextureCube, "industrial_sunset_puresky_2k.hdr");
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
@@ -75,7 +76,7 @@ auto Renderer::post_process() -> void {
   m_resource_manager->bind(m_final_fb);
   auto& shader = m_resource_manager->get<Shader>(m_post_process_shader);
   shader.bind();
-  auto vproj = glm::mat4(glm::mat3(camera.get_view_projection()));
+  auto& vproj = camera.get_view_projection();
   shader.upload_uniform_mat4("inv_view_projection", glm::inverse(vproj));
   shader.upload_uniform_mat4("prev_view_projection", m_prev_view_projection);
   shader.upload_uniform_int("u_motion_blur", g_motion_blur);
@@ -83,7 +84,7 @@ auto Renderer::post_process() -> void {
   framebuffer.get_color_attachments()[0].bind();
   shader.upload_uniform_int("u_buf", 0);
   glActiveTexture(GL_TEXTURE1);
-  framebuffer.get_color_attachments()[1].bind();
+  glBindTexture(GL_TEXTURE_2D, framebuffer.depth_attachment());
   shader.upload_uniform_int("u_depth", 1);
   glDrawArrays(GL_TRIANGLES, 0, 3);
   m_resource_manager->unbind(m_final_fb);

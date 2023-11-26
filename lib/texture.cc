@@ -5,10 +5,14 @@ auto Texture::Desc::opengl_format() -> i32 {
   switch (format) {
     case Format::RGB8:
       return GL_RGB8;
+    case Format::RGB16F:
+      return GL_RGB16F;
     case Format::RGB32F:
       return GL_RGB32F;
     case Format::RGBA32F:
       return GL_RGBA32F;
+    case Format::Depth:
+      return GL_DEPTH24_STENCIL8;
     default:
       __builtin_unreachable();
       assert(false && "format not found");

@@ -56,10 +56,10 @@ void main() {
     color = texture(u_buf, uv);
     if (u_motion_blur) {
         float depth = texture(u_depth, uv).x;
-        vec3 current = vec3(uv, depth) * 2.f - 1.f;
+        vec3 current = vec3(uv * 2.f - 1.f, depth);
         vec4 prev = prev_view_projection * (inv_view_projection * vec4(current, 1.0f));
         vec2 blur_vec = (current.xy - prev.xy) * 0.6f;
-        int samples = 24;
+        int samples = 32;
         for (int i = 1; i < samples; ++i) {
             vec2 offset = blur_vec * (float(i) / float(samples - 1) - 0.5f);
             color += texture(u_buf, uv + offset);
