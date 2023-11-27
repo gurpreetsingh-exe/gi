@@ -65,8 +65,10 @@ public:
   Texture(Type type, const fs::path& path);
   Texture(Texture&& other);
   ~Texture() {
-    dbg("~Texture(%d)\n", m_Id);
-    glDeleteTextures(1, &m_Id);
+    if (m_Id) {
+      dbg("~Texture(%d)\n", m_Id);
+      glDeleteTextures(1, &m_Id);
+    }
   }
 
 public:

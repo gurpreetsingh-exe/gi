@@ -12,8 +12,10 @@ public:
   Shader(const std::string& vert_src, const std::string& frag_src);
   Shader(Shader&& other);
   ~Shader() {
-    dbg("~Shader(%d)\n", m_Id);
-    glDeleteProgram(m_Id);
+    if (m_Id) {
+      dbg("~Shader(%d)\n", m_Id);
+      glDeleteProgram(m_Id);
+    }
   }
 
 public:

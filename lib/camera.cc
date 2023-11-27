@@ -3,7 +3,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <window.hh>
 
-#define SPEED 0.005f
+#define SPEED 0.007f
 #define ROT_SPEED 0.8f
 
 extern Window window;

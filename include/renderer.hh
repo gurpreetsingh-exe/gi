@@ -46,8 +46,6 @@ private:
   Resource<Shader> m_post_process_shader;
   Resource<Texture> m_cubemap;
   Entity m_camera;
-
-  glm::mat4 m_prev_view_projection;
 };
 
 #endif // !RENDERER_H

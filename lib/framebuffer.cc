@@ -29,8 +29,11 @@ Framebuffer::Framebuffer(Framebuffer&& other) {
 }
 
 Framebuffer::~Framebuffer() {
-  m_color_attachments.clear();
-  glDeleteFramebuffers(1, &m_Id);
+  if (m_Id) {
+    dbg("~Framebuffer(id = %d)\n", m_Id);
+    m_color_attachments.clear();
+    glDeleteFramebuffers(1, &m_Id);
+  }
 }
 
 auto Framebuffer::add_attachments() -> void {

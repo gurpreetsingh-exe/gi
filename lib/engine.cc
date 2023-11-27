@@ -25,6 +25,7 @@ Engine::Engine() {
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(message_callback, 0);
   m_resource_manager = std::make_shared<ResourceManager>();
+  m_compositor = std::make_unique<Compositor>(m_resource_manager);
   m_renderer = std::make_unique<Renderer>(m_resource_manager);
   m_scene = std::make_unique<Scene>();
   m_editor = std::make_unique<Editor>();
@@ -35,11 +36,16 @@ auto Engine::run() -> void {
   m_resource_manager->get(shader).upload_binding("Camera", 0);
   m_renderer->upload_mesh(Mesh::from_obj("model1.obj"), shader);
   m_renderer->set_active_camera(m_scene->add_camera());
+  m_compositor->add_effect("../shaders/tonemap.glsl");
 
+  m_editor->update(m_scene, m_renderer->framebuffer());
   window.is_running([&] {
-    m_editor->update(m_scene, m_renderer->framebuffer());
     auto [x, y] = m_editor->get_viewport_size();
     m_renderer->resize(x, y);
     m_renderer->draw();
+    auto& texture = m_renderer->framebuffer().get_color_attachments()[0];
+    m_compositor->resize(x, y);
+    m_compositor->composite(texture);
+    m_editor->update(m_scene, m_compositor->framebuffer());
   });
 }

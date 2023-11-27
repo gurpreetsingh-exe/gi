@@ -37,7 +37,11 @@ namespace chr = std::chrono;
     std::exit(1);                                                              \
   }
 
+#if !defined(NDEBUG)
 #define dbg(...) std::fprintf(stderr, __VA_ARGS__)
+#else
+#define dbg(...)
+#endif
 
 auto read_file(const fs::path& path) -> std::string;
 

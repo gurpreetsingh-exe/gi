@@ -1,3 +1,4 @@
+#include <compositor.hh>
 #include <editor.hh>
 #include <renderer.hh>
 #include <resource_manager.hh>
@@ -18,4 +19,5 @@ private:
   std::shared_ptr<ResourceManager> m_resource_manager;
   std::unique_ptr<Scene> m_scene;
   std::unique_ptr<Editor> m_editor;
+  std::unique_ptr<Compositor> m_compositor;
 };
