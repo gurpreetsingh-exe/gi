@@ -48,6 +48,8 @@ auto Camera::update() -> void {
   }
 
   m_last_mouse_pos = event->mouse_pos;
+  m_uniform_buffer.upload_data(glm::value_ptr(m_view_projection),
+                               sizeof(glm::mat4), sizeof(glm::mat4));
 
   if (m_needs_update) {
     update_matrix();

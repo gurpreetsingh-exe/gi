@@ -5,8 +5,10 @@
 #include <GL/glew.h>
 // clang-format on
 #include <GLFW/glfw3.h>
+#include <buffer.hh>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <utils.hh>
 
 static constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -15,7 +17,8 @@ class Camera {
 public:
   Camera(f32 width, f32 height, f32 fov, f32 clip_near, f32 clip_far)
       : m_viewport_width(width), m_viewport_height(height), m_fov(fov),
-        m_clip_near(clip_near), m_clip_far(clip_far) {
+        m_clip_near(clip_near), m_clip_far(clip_far),
+        m_uniform_buffer(UniformBuffer(2 * sizeof(glm::mat4))) {
     update_model();
     update_projection();
     update_view();
@@ -81,6 +84,8 @@ private:
     update_view();
     update_projection();
     m_view_projection = m_projection * m_view;
+    m_uniform_buffer.upload_data(glm::value_ptr(m_view_projection),
+                                 sizeof(glm::mat4));
   }
 
 private:
@@ -102,6 +107,7 @@ private:
   glm::vec3 m_right = glm::vec3(1.0f, 0.0f, 0.0f);
 
   glm::vec2 m_last_mouse_pos = glm::vec2(0.0f);
+  UniformBuffer m_uniform_buffer;
 };
 
 #endif // !CAMERA_H

@@ -91,3 +91,8 @@ auto Shader::upload_uniform_mat4(const std::string& name, const glm::mat4& mat)
   auto matLoc = glGetUniformLocation(m_Id, name.c_str());
   glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
+
+auto Shader::upload_binding(const std::string& name, i32 binding) -> void {
+  auto index = glGetUniformBlockIndex(m_Id, name.c_str());
+  glUniformBlockBinding(m_Id, index, binding);
+}

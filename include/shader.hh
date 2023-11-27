@@ -25,6 +25,7 @@ public:
   auto upload_uniform_sampler(const std::string& name, i32 tex) -> void;
   auto upload_uniform_mat4(const std::string& name, const glm::mat4& mat)
       -> void;
+  auto upload_binding(const std::string& name, i32 binding) -> void;
 
 private:
   u32 m_Id;

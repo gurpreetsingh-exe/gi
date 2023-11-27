@@ -1,9 +1,11 @@
 #version 450
 
 layout (location = 0) in vec3 position;
-out vec3 pos;
+layout (std140) uniform Camera {
+    mat4 view_projection;
+};
 
-uniform mat4 view_projection;
+out vec3 pos;
 
 void main() {
     pos = position;

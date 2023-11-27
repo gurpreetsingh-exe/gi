@@ -32,6 +32,7 @@ Engine::Engine() {
 
 auto Engine::run() -> void {
   auto shader = m_resource_manager->create<Shader>(vert, frag);
+  m_resource_manager->get(shader).upload_binding("Camera", 0);
   m_renderer->upload_mesh(Mesh::from_obj("model1.obj"), shader);
   m_renderer->set_active_camera(m_scene->add_camera());
 

@@ -24,8 +24,10 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   m_cubemap_vao = std::make_unique<VertexArray>(mesh_to_vao(Mesh::cube()));
   m_cubemap_shader = m_resource_manager->create<Shader>(
       "../shaders/cubemap_vert.glsl", "../shaders/cubemap_frag.glsl");
+  m_resource_manager->get(m_cubemap_shader).upload_binding("Camera", 0);
   m_post_process_shader =
       m_resource_manager->create<Shader>(Shader::quad("../shaders/post.glsl"));
+  m_resource_manager->get(m_post_process_shader).upload_binding("Camera", 0);
 }
 
 auto Renderer::upload_mesh(std::unique_ptr<Mesh>&& mesh,
@@ -51,13 +53,11 @@ auto Renderer::draw() -> void {
   glEnable(GL_DEPTH_TEST);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  auto& camera = m_camera.get_component<CameraComponent>().camera;
   for (auto& [vao, s] : m_bindings) {
     auto& shader = m_resource_manager->get<Shader>(s);
     shader.bind();
     m_resource_manager->bind(m_cubemap);
     shader.upload_uniform_int("u_cubemap", 0);
-    shader.upload_uniform_mat4("view_projection", camera.get_view_projection());
     vao.bind();
     glDrawElements(GL_TRIANGLES, vao.elems(), GL_UNSIGNED_INT, nullptr);
     glViewport(0, 0, i32(m_width), i32(m_height));
@@ -65,20 +65,16 @@ auto Renderer::draw() -> void {
     shader.unbind();
   }
 
-  draw_cubemap(camera);
+  draw_cubemap();
   glDisable(GL_DEPTH_TEST);
   post_process();
 }
 
 auto Renderer::post_process() -> void {
-  auto& camera = m_camera.get_component<CameraComponent>().camera;
   auto& framebuffer = m_resource_manager->get(m_framebuffer);
   m_resource_manager->bind(m_final_fb);
   auto& shader = m_resource_manager->get<Shader>(m_post_process_shader);
   shader.bind();
-  auto& vproj = camera.get_view_projection();
-  shader.upload_uniform_mat4("inv_view_projection", glm::inverse(vproj));
-  shader.upload_uniform_mat4("prev_view_projection", m_prev_view_projection);
   shader.upload_uniform_int("u_motion_blur", g_motion_blur);
   glActiveTexture(GL_TEXTURE0);
   framebuffer.get_color_attachments()[0].bind();
@@ -88,14 +84,12 @@ auto Renderer::post_process() -> void {
   shader.upload_uniform_int("u_depth", 1);
   glDrawArrays(GL_TRIANGLES, 0, 3);
   m_resource_manager->unbind(m_final_fb);
-  m_prev_view_projection = vproj;
 }
 
-auto Renderer::draw_cubemap(Camera& camera) -> void {
+auto Renderer::draw_cubemap() -> void {
   glDepthFunc(GL_LEQUAL);
   auto& shader = m_resource_manager->get<Shader>(m_cubemap_shader);
   shader.bind();
-  shader.upload_uniform_mat4("view_projection", camera.get_view_projection());
   m_cubemap_vao->bind();
   m_resource_manager->bind(m_cubemap);
   shader.upload_uniform_int("u_cubemap", 0);

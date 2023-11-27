@@ -36,4 +36,36 @@ private:
   u32 m_Id;
 };
 
+class UniformBuffer {
+public:
+  UniformBuffer() {
+    glCreateBuffers(1, &m_Id);
+    glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
+  }
+
+  UniformBuffer(isize size) {
+    glCreateBuffers(1, &m_Id);
+    dbg("UniformBuffer(id = %d)\n", m_Id);
+    glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
+    glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_STREAM_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_Id, 0, size);
+  }
+
+  ~UniformBuffer() {
+    dbg("~UniformBuffer(id = %d)\n", m_Id);
+    glDeleteBuffers(1, &m_Id);
+  }
+
+public:
+  auto bind() -> void { glBindBuffer(GL_UNIFORM_BUFFER, m_Id); }
+  auto unbind() -> void { glBindBuffer(GL_UNIFORM_BUFFER, 0); }
+  auto upload_data(const void* data, isize size, isize start = 0) -> void {
+    glBufferSubData(GL_UNIFORM_BUFFER, start, size, data);
+  }
+
+private:
+  u32 m_Id;
+};
+
 #endif // !BUFFER_H
