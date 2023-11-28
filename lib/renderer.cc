@@ -25,8 +25,8 @@ Renderer::Renderer(std::shared_ptr<ResourceManager> rm) {
   m_cubemap_shader = m_resource_manager->create<Shader>(
       "../shaders/cubemap_vert.glsl", "../shaders/cubemap_frag.glsl");
   m_resource_manager->get(m_cubemap_shader).upload_binding("Camera", 0);
-  m_post_process_shader =
-      m_resource_manager->create<Shader>(Shader::quad("../shaders/post.glsl"));
+  m_post_process_shader = m_resource_manager->create<Shader>(
+      Shader::quad("../shaders/motion_blur.glsl"));
   m_resource_manager->get(m_post_process_shader).upload_binding("Camera", 0);
 }
 

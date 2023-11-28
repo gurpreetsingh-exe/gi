@@ -18,7 +18,7 @@ public:
   Camera(f32 width, f32 height, f32 fov, f32 clip_near, f32 clip_far)
       : m_viewport_width(width), m_viewport_height(height), m_fov(fov),
         m_clip_near(clip_near), m_clip_far(clip_far),
-        m_uniform_buffer(UniformBuffer(2 * sizeof(glm::mat4))) {
+        m_uniform_buffer(UniformBuffer(3 * sizeof(glm::mat4))) {
     update_model();
     update_projection();
     update_view();
@@ -86,6 +86,9 @@ private:
     m_view_projection = m_projection * m_view;
     m_uniform_buffer.upload_data(glm::value_ptr(m_view_projection),
                                  sizeof(glm::mat4));
+    m_uniform_buffer.upload_data(
+        glm::value_ptr(glm::inverse(m_view_projection)), sizeof(glm::mat4),
+        sizeof(glm::mat4) * 2);
   }
 
 private:
